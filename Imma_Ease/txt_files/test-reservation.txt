@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Immaculate - Facility Reservation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f0f5fa;
+            color: #1a3b4c;
+            line-height: 1.5;
+        }
+
+        /* ===== BLUE COLOR PALETTE ===== */
+        :root {
+            --blue-900: #0f2b4f;
+            --blue-800: #1a3c6e;
+            --blue-700: #1e4a7a;
+            --blue-600: #2a5298;
+            --blue-500: #2e5eaa;
+            --blue-400: #4a7db8;
+            --blue-300: #7ba0d4;
+            --blue-200: #b0c8e8;
+            --blue-100: #dae6f5;
+            --blue-50: #edf3fa;
+            --white: #ffffff;
+            --gray-50: #f9fbfd;
+            --gray-100: #f0f5fa;
+            --danger: #dc3545;
+            --danger-dark: #b02a37;
+            --success: #28a745;
+            --warning: #ffc107;
+        }
+
+        /* ===== MODERN HEADER ===== */
+        .modern-header {
+            background: linear-gradient(135deg, var(--blue-800), var(--blue-900));
+            color: white;
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 4px 20px rgba(15, 43, 79, 0.3);
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-dashboard {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-dashboard:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-3px);
+        }
+
+        .header-title {
+            text-align: center;
+        }
+
+        .header-title h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: white;
+            letter-spacing: -0.3px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title p {
+            font-size: 0.75rem;
+            color: var(--blue-200);
+            margin-top: 2px;
+        }
+
+        .header-spacer {
+            width: 100px;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            max-width: 2600px;
+            margin: 1.5rem auto 0;
+            padding: 0 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: stretch;
+        }
+
+        /* ===== LEFT SIDEBAR - STATS + TODAY'S SCHEDULE ===== */
+        .left-sidebar {
+            width: 320px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Stats Card */
+        .stats-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.8rem 1.5rem;
+            box-shadow: 0 10px 25px rgba(15, 43, 79, 0.08);
+            border: 1px solid var(--blue-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--blue-600), var(--blue-300), var(--blue-700));
+        }
+
+        .stats-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed var(--blue-200);
+        }
+
+        .stats-header-icon {
+            font-size: 2rem;
+            background: var(--blue-100);
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            color: var(--blue-700);
+        }
+
+        .stats-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--blue-800);
+            letter-spacing: -0.2px;
+        }
+
+        .stats-header p {
+            font-size: 0.8rem;
+            color: var(--blue-600);
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--blue-100);
+            transition: all 0.2s;
+        }
+
+        .stat-item:hover {
+            background: var(--blue-50);
+            padding-left: 0.5rem;
+            border-radius: 12px;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--blue-100);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--blue-700);
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--blue-600);
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--blue-800);
+            line-height: 1.2;
+        }
+
+        /* Today's Schedule Card */
+        .schedule-card-sidebar {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(15, 43, 79, 0.08);
+            border: 1px solid var(--blue-200);
+            flex: 1;
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--blue-100);
+        }
+
+        .schedule-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--blue-800);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .schedule-header h3 span {
+            font-size: 1.4rem;
+        }
+
+        .schedule-date {
+            font-size: 0.8rem;
+            color: var(--blue-700);
+            background: var(--blue-100);
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--blue-100);
+            transition: all 0.2s;
+        }
+
+        .schedule-item:hover {
+            background: var(--blue-50);
+            padding-left: 0.5rem;
+            border-radius: 12px;
+        }
+
+        .schedule-time {
+            font-weight: 700;
+            color: var(--blue-700);
+            font-size: 0.8rem;
+            min-width: 70px;
+            background: var(--blue-100);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .schedule-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--blue-500);
+            box-shadow: 0 0 0 2px var(--blue-200);
+        }
+
+        .schedule-dot.pending {
+            background: #f4b836;
+            box-shadow: 0 0 0 2px #ffe5b4;
+        }
+
+        .schedule-dot.approved {
+            background: var(--blue-600);
+            box-shadow: 0 0 0 2px var(--blue-200);
+        }
+
+        .schedule-content {
+            flex: 1;
+        }
+
+        .schedule-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--blue-800);
+        }
+
+        .schedule-name {
+            font-size: 0.8rem;
+            color: var(--blue-600);
+        }
+
+        .view-link {
+            color: var(--blue-700);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-top: 1.2rem;
+            padding: 0.5rem 1rem;
+            background: var(--blue-100);
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+
+        .view-link:hover {
+            background: var(--blue-200);
+            gap: 0.6rem;
+        }
+
+        /* ===== RIGHT CONTENT - CALENDAR SECTION ===== */
+        .calendar-section {
+            flex: 1;
+        }
+
+        /* Action bar */
+        .action-bar-modern {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(15, 43, 79, 0.05);
+            border: 1px solid var(--blue-200);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--blue-800);
+            background: var(--blue-100);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+        }
+
+        .filter-select-modern {
+            padding: 0.6rem 2.5rem 0.6rem 1.2rem;
+            border: 2px solid var(--blue-200);
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: var(--blue-800);
+            font-weight: 600;
+            background: white;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232a5298' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+
+        .filter-select-modern:focus {
+            border-color: var(--blue-600);
+            box-shadow: 0 0 0 3px var(--blue-100);
+        }
+
+        .btn-group-modern {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn-modern {
+            padding: 0.6rem 1.6rem;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary-modern {
+            background: linear-gradient(135deg, var(--blue-700), var(--blue-800));
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 74, 122, 0.3);
+        }
+
+        .btn-primary-modern:hover {
+            background: linear-gradient(135deg, var(--blue-800), var(--blue-900));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(15, 43, 79, 0.3);
+        }
+
+        .btn-outline-modern {
+            background: transparent;
+            border: 2px solid var(--blue-600);
+            color: var(--blue-700);
+        }
+
+        .btn-outline-modern:hover {
+            background: var(--blue-100);
+            transform: translateY(-2px);
+        }
+
+        /* Calendar card */
+        .calendar-card-modern {
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(15, 43, 79, 0.15);
+            border: 1px solid var(--blue-200);
+        }
+
+        .calendar-header-modern {
+            background: linear-gradient(135deg, var(--blue-50), white);
+            padding: 1.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--blue-200);
+        }
+
+        .calendar-header-left h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--blue-800);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .calendar-header-left p {
+            font-size: 0.95rem;
+            color: var(--blue-600);
+            margin-top: 0.3rem;
+            font-weight: 500;
+        }
+
+        .calendar-nav-modern {
+            display: flex;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.4rem;
+            border-radius: 60px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--blue-200);
+        }
+
+        .nav-btn-modern {
+            background: transparent;
+            border: none;
+            color: var(--blue-700);
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn-modern:hover {
+            background: var(--blue-100);
+        }
+
+        .nav-btn-modern.today {
+            background: var(--blue-600);
+            color: white;
+        }
+
+        /* Calendar grid */
+        .calendar-grid-modern {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: white;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .weekday-modern {
+            padding: 1.2rem 0.5rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--blue-700);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--blue-200);
+        }
+
+        .calendar-cell-modern {
+            min-height: 140px;
+            padding: 1rem 0.5rem;
+            border-right: 1px solid var(--blue-100);
+            border-bottom: 1px solid var(--blue-100);
+            background: white;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .calendar-cell-modern:hover {
+            background: var(--blue-50);
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(15, 43, 79, 0.1);
+            z-index: 5;
+            border-radius: 16px;
+        }
+
+        .calendar-cell-modern.other-month {
+            background: #f9fcff;
+            color: #a0b8c9;
+        }
+
+        .calendar-cell-modern.today {
+            background: var(--blue-50);
+            border-radius: 16px;
+            border: 2px solid var(--blue-600);
+        }
+
+        .day-number-modern {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.6rem;
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+            border-radius: 50%;
+            background: transparent;
+        }
+
+        .today .day-number-modern {
+            background: var(--blue-600);
+            color: white;
+        }
+
+        /* Reservation badges */
+        .reservation-badge-modern {
+            background: var(--blue-100);
+            border-left: 4px solid var(--blue-600);
+            padding: 0.4rem 0.6rem;
+            margin: 0.3rem 0;
+            font-size: 0.7rem;
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            color: var(--blue-800);
+        }
+
+        .reservation-badge-modern:hover {
+            background: var(--blue-200);
+            transform: translateX(3px);
+        }
+
+        .reservation-badge-modern.pending {
+            background: #fff8e0;
+            border-left-color: #f4b836;
+            color: #8a6e2c;
+        }
+
+        .reservation-badge-modern.approved {
+            background: var(--blue-100);
+            border-left-color: var(--blue-600);
+        }
+
+        .more-badge-modern {
+            background: var(--blue-200);
+            color: var(--blue-800);
+            font-size: 0.65rem;
+            text-align: center;
+            padding: 0.3rem;
+            border-radius: 20px;
+            margin-top: 0.3rem;
+            font-weight: 700;
+        }
+
+        /* Footer */
+        .footer-modern {
+            margin-top: 3rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-top: 2px solid var(--blue-200);
+            text-align: center;
+            color: var(--blue-600);
+            font-size: 0.85rem;
+        }
+
+        .footer-dist {
+            font-weight: 700;
+            color: var(--blue-700);
+            margin-bottom: 0.3rem;
+            font-size: 1rem;
+        }
+
+        /* ===== MODAL STYLES ===== */
+        .modal-modern {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 43, 79, 0.3);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content-modern {
+            background: white;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(15, 43, 79, 0.3);
+            border: 1px solid var(--blue-200);
+            position: relative;
+            z-index: 1001;
+        }
+
+        .modal-content-modern.wide-modal {
+            max-width: 900px;
+        }
+
+        .modal-header-modern {
+            background: linear-gradient(135deg, var(--blue-700), var(--blue-800));
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 28px 28px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-header-modern h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        /* Form Styles */
+        .form-group-modern {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control-modern {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid var(--blue-200);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-control-modern:focus {
+            outline: none;
+            border-color: var(--blue-600);
+            box-shadow: 0 0 0 3px var(--blue-100);
+        }
+
+        .form-control-modern.error {
+            border-color: var(--danger);
+            background: #fff8f8;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: var(--blue-700);
+            font-size: 0.9rem;
+        }
+
+        .form-row-modern {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--blue-600);
+            color: var(--blue-700);
+        }
+
+        .btn-outline:hover {
+            background: var(--blue-100);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .footer-buttons-modern {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--blue-100);
+        }
+
+        /* Search Results Styles - FIXED */
+        .search-container {
+            position: relative;
+        }
+
+        .search-results-modern {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--blue-200);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .search-item {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--blue-100);
+            transition: all 0.2s;
+        }
+
+        .search-item:hover {
+            background: var(--blue-50);
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .selected-resident-modern {
+            background: var(--blue-50);
+            border-left: 4px solid var(--blue-600);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .resident-change-btn {
+            margin-left: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .resident-change-btn:hover {
+            background: var(--danger-dark);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem;
+            color: var(--blue-600);
+        }
+
+        .loading-spinner::after {
+            content: '';
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid var(--blue-200);
+            border-top-color: var(--blue-600);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Alert System */
+        .alert-container-modern {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .alert-modern {
+            background: white;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 15px 30px rgba(15, 43, 79, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-left: 4px solid;
+            border: 1px solid var(--blue-200);
+            animation: slideInRight 0.3s ease-out forwards;
+            pointer-events: auto;
+        }
+
+        .alert-modern.success {
+            border-left-color: var(--success);
+            background: #f0fff4;
+        }
+
+        .alert-modern.error {
+            border-left-color: var(--danger);
+            background: #fff5f5;
+        }
+
+        .alert-modern.warning {
+            border-left-color: var(--warning);
+            background: #fff9e6;
+        }
+
+        .alert-modern.info {
+            border-left-color: var(--blue-600);
+            background: var(--blue-50);
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+        }
+
+        .alert-content-modern {
+            flex: 1;
+        }
+
+        .alert-title-modern {
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .alert-message-modern {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+        }
+
+        [data-tooltip]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.4rem 0.8rem;
+            background: var(--blue-900);
+            color: white;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            display: none;
+            z-index: 1000;
+        }
+
+        [data-tooltip]:hover:before {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .left-sidebar {
+                width: 100%;
+                flex-direction: row;
+            }
+            .stats-card, .schedule-card-sidebar {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .left-sidebar {
+                flex-direction: column;
+            }
+            .action-bar-modern {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .calendar-header-modern {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .form-row-modern {
+                grid-template-columns: 1fr;
+            }
+            .modal-content-modern {
+                width: 95%;
+                margin: 1rem;
+            }
+            .footer-buttons-modern {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Accessibility - Focus visible */
+        :focus-visible {
+            outline: 3px solid var(--blue-400);
+            outline-offset: 2px;
+        }
+
+        /* ARIA support */
+        [aria-hidden="true"] {
+            display: none !important;
+        }
+
+        [role="dialog"] {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Blue Header -->
+    <div class="modern-header">
+        <div class="header-container">
+            <a href="dashboard.html" class="back-dashboard" data-tooltip="Return to main dashboard">
+                ← Dashboard
+            </a>
+            <div class="header-title">
+                <h1>Barangay Immaculate • Facility Reservation</h1>
+                <p>Manage and book barangay facilities • 2026</p>
+            </div>
+            <div class="header-spacer"></div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div class="alert-container-modern" id="alertContainer" role="alert" aria-live="polite"></div>
+
+    <!-- Main Layout -->
+    <div class="main-container">
+        <!-- LEFT SIDEBAR -->
+        <div class="left-sidebar">
+            <!-- Stats Card -->
+            <div class="stats-card">
+                <div class="stats-header">
+                    <div class="stats-header-icon">📊</div>
+                    <div>
+                        <h2>Overview</h2>
+                        <p>DIST. IV • 1974</p>
+                    </div>
+                </div>
+                
+                <div class="stat-item" data-tooltip="Total number of reservations">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-content">
+                        <div class="stat-label">TOTAL RESERVATIONS</div>
+                        <div class="stat-value" id="totalReservations">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item" data-tooltip="Reservations waiting for approval">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-content">
+                        <div class="stat-label">PENDING APPROVAL</div>
+                        <div class="stat-value" id="pendingReservations">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item" data-tooltip="Reservations approved for today">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-label">APPROVED TODAY</div>
+                        <div class="stat-value" id="approvedReservations">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item" data-tooltip="Available facilities for booking">
+                    <div class="stat-icon">🏛️</div>
+                    <div class="stat-content">
+                        <div class="stat-label">AVAILABLE FACILITIES</div>
+                        <div class="stat-value" id="facilitiesCount">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule Card -->
+            <div class="schedule-card-sidebar">
+                <div class="schedule-header">
+                    <h3>
+                        <span>📋</span> Today's Schedule
+                    </h3>
+                    <span class="schedule-date" id="todayDate">Dec 13, 2025</span>
+                </div>
+                <div id="todayScheduleList" class="loading-spinner">
+                    Loading today's schedule...
+                </div>
+                <a href="#" class="view-link" onclick="showAllReservations(); return false;" data-tooltip="View all reservations">
+                    View Full Schedule →
+                </a>
+            </div>
+        </div>
+
+        <!-- RIGHT CONTENT -->
+        <div class="calendar-section">
+            <!-- Action Bar -->
+            <div class="action-bar-modern">
+                <div class="filter-group">
+                    <span class="filter-label">Filter by</span>
+                    <select id="facilityFilter" class="filter-select-modern" aria-label="Filter reservations by facility">
+                        <option value="">All Facilities</option>
+                    </select>
+                </div>
+                <div class="btn-group-modern">
+                    <button class="btn-modern btn-primary-modern" id="addReservationBtn" data-tooltip="Create a new reservation">
+                        + New Reservation
+                    </button>
+                    <button class="btn-modern btn-outline-modern" id="viewReservationsBtn" data-tooltip="View all reservations">
+                        View All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="calendar-card-modern">
+                <div class="calendar-header-modern">
+                    <div class="calendar-header-left">
+                        <h2 id="calendarTitle">February 2026</h2>
+                        <p>Click any date to create a reservation</p>
+                    </div>
+                    <div class="calendar-nav-modern">
+                        <button class="nav-btn-modern" id="prevMonth" data-tooltip="Previous month">← Prev</button>
+                        <button class="nav-btn-modern today" id="todayBtn" data-tooltip="Go to today">Today</button>
+                        <button class="nav-btn-modern" id="nextMonth" data-tooltip="Next month">Next →</button>
+                    </div>
+                </div>
+                <div class="calendar-grid-modern" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-modern">
+        <div class="footer-dist">DIST. IV • NCR • 2026 • PH</div>
+        <div>© Systems Plus Computer College v1.0 • Barangay Immaculate</div>
+    </div>
+
+    <!-- New Reservation Modal -->
+    <div class="modal-modern" id="reservationModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content-modern">
+            <div class="modal-header-modern">
+                <h2 id="modalTitle">New Reservation</h2>
+                <button class="modal-close" id="closeModalBtn" aria-label="Close dialog">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="reservationForm" novalidate>
+                    <input type="hidden" id="reservationId">
+                    <input type="hidden" id="selectedResidentId">
+                    
+                    <div class="form-group-modern">
+                        <label class="form-label" for="facilitySelect">Facility *</label>
+                        <select id="facilitySelect" class="form-control-modern" required aria-required="true">
+                            <option value="">Select Facility</option>
+                        </select>
+                        <div class="error-message" id="facilityError"></div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label class="form-label" for="residentSearch">Search Resident *</label>
+                        <div class="search-container">
+                            <input type="text" id="residentSearch" class="form-control-modern" placeholder="Type resident name..." autocomplete="off" aria-autocomplete="list" aria-controls="searchResults">
+                            <div class="search-results-modern" id="searchResults" role="listbox"></div>
+                        </div>
+                        <div class="selected-resident-modern" id="selectedResident"></div>
+                        <div class="error-message" id="residentError"></div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label class="form-label" for="reservationDate">Date *</label>
+                        <input type="date" id="reservationDate" class="form-control-modern" required aria-required="true">
+                        <div class="error-message" id="dateError"></div>
+                    </div>
+
+                    <div class="form-row-modern">
+                        <div class="form-group-modern">
+                            <label class="form-label" for="startTime">Start Time *</label>
+                            <input type="time" id="startTime" class="form-control-modern" required aria-required="true">
+                            <div class="error-message" id="startTimeError"></div>
+                        </div>
+                        <div class="form-group-modern">
+                            <label class="form-label" for="endTime">End Time *</label>
+                            <input type="time" id="endTime" class="form-control-modern" required aria-required="true">
+                            <div class="error-message" id="endTimeError"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label class="form-label" for="purpose">Purpose *</label>
+                        <textarea id="purpose" class="form-control-modern" rows="4" maxlength="500" required aria-required="true" placeholder="Describe the purpose of reservation... (max 500 characters)"></textarea>
+                        <div class="character-count" id="purposeCount">0/500</div>
+                        <div class="error-message" id="purposeError"></div>
+                    </div>
+
+                    <div class="footer-buttons-modern">
+                        <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Reservation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Reservation Modal -->
+    <div class="modal-modern" id="viewReservationModal" role="dialog" aria-modal="true" aria-labelledby="viewModalTitle">
+        <div class="modal-content-modern">
+            <div class="modal-header-modern">
+                <h2 id="viewModalTitle">Reservation Details</h2>
+                <button class="modal-close" id="closeViewBtn" aria-label="Close dialog">&times;</button>
+            </div>
+            <div class="modal-body" id="reservationDetails">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservations List Modal -->
+    <div class="modal-modern" id="reservationsListModal" role="dialog" aria-modal="true" aria-labelledby="listModalTitle">
+        <div class="modal-content-modern wide-modal">
+            <div class="modal-header-modern">
+                <h2 id="listModalTitle">All Reservations</h2>
+                <button class="modal-close" id="closeListBtn" aria-label="Close dialog">&times;</button>
+            </div>
+            <div class="modal-body" id="reservationsList">
+                <!-- List will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Dialog (Hidden by default) -->
+    <div class="modal-modern" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="modal-content-modern" style="max-width: 400px;">
+            <div class="modal-header-modern">
+                <h2 id="confirmTitle">Confirm Action</h2>
+                <button class="modal-close" id="closeConfirmBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure?</p>
+                <div class="footer-buttons-modern">
+                    <button class="btn btn-outline" id="confirmNo">No</button>
+                    <button class="btn btn-danger" id="confirmYes">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API endpoints
+        const API_BASE = '/BARANGAY_EASE/api';
+        const ENDPOINTS = {
+            FACILITIES: `${API_BASE}/reservations/get_facilities.php`,
+            RESERVATIONS: `${API_BASE}/reservations/get_reservations.php`,
+            SAVE_RESERVATION: `${API_BASE}/reservations/save_reservation.php`,
+            UPDATE_RESERVATION: `${API_BASE}/reservations/update_reservation.php`,
+            DELETE_RESERVATION: `${API_BASE}/reservations/delete_reservation.php`,
+            UPDATE_STATUS: `${API_BASE}/reservations/update_status.php`,
+            RESIDENTS: `${API_BASE}/residents/get_residents.php`
+        };
+
+        // Global variables
+        let currentDate = new Date();
+        let facilities = [];
+        let residents = [];
+        let reservations = [];
+        let selectedFacility = '';
+        let formChanged = false;
+        let pendingAction = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            loadFacilities();
+            loadResidents();
+            loadReservations();
+            setupEventListeners();
+            generateCalendar();
+            updateTodayDate();
+            setupKeyboardNavigation();
+            setupFormChangeTracking();
+        });
+
+        function setupFormChangeTracking() {
+            const form = document.getElementById('reservationForm');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    formChanged = true;
+                });
+                input.addEventListener('input', () => {
+                    formChanged = true;
+                });
+            });
+        }
+
+        function setupKeyboardNavigation() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const openModals = document.querySelectorAll('.modal-modern[style*="display: flex"]');
+                    if (openModals.length > 0) {
+                        const lastModal = openModals[openModals.length - 1];
+                        if (lastModal.id === 'confirmModal') {
+                            closeModal('confirmModal');
+                        } else {
+                            checkUnsavedChanges(() => {
+                                closeModal(lastModal.id);
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+        function checkUnsavedChanges(callback) {
+            if (formChanged && document.getElementById('reservationModal').style.display === 'flex') {
+                showConfirmDialog(
+                    'Unsaved Changes',
+                    'You have unsaved changes. Are you sure you want to close?',
+                    callback,
+                    () => {}
+                );
+            } else {
+                callback();
+            }
+        }
+
+        function showConfirmDialog(title, message, onConfirm, onCancel) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            
+            pendingAction = { onConfirm, onCancel };
+            
+            document.getElementById('confirmYes').onclick = () => {
+                if (pendingAction?.onConfirm) pendingAction.onConfirm();
+                closeModal('confirmModal');
+                pendingAction = null;
+            };
+            
+            document.getElementById('confirmNo').onclick = () => {
+                if (pendingAction?.onCancel) pendingAction.onCancel();
+                closeModal('confirmModal');
+                pendingAction = null;
+            };
+            
+            document.getElementById('closeConfirmBtn').onclick = () => {
+                if (pendingAction?.onCancel) pendingAction.onCancel();
+                closeModal('confirmModal');
+                pendingAction = null;
+            };
+            
+            openModal('confirmModal');
+        }
+
+        function updateTodayDate() {
+            const today = new Date();
+            document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('prevMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                generateCalendar();
+            });
+            
+            document.getElementById('nextMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                generateCalendar();
+            });
+            
+            document.getElementById('todayBtn').addEventListener('click', () => {
+                currentDate = new Date();
+                generateCalendar();
+            });
+
+            document.getElementById('facilityFilter').addEventListener('change', (e) => {
+                selectedFacility = e.target.value;
+                generateCalendar();
+            });
+
+            document.getElementById('addReservationBtn').addEventListener('click', () => openAddModal());
+            document.getElementById('viewReservationsBtn').addEventListener('click', showAllReservations);
+
+            document.getElementById('closeModalBtn').addEventListener('click', () => {
+                checkUnsavedChanges(() => closeModal('reservationModal'));
+            });
+            
+            document.getElementById('closeViewBtn').addEventListener('click', () => closeModal('viewReservationModal'));
+            document.getElementById('closeListBtn').addEventListener('click', () => closeModal('reservationsListModal'));
+            
+            document.getElementById('cancelBtn').addEventListener('click', () => {
+                checkUnsavedChanges(() => closeModal('reservationModal'));
+            });
+
+            document.getElementById('reservationForm').addEventListener('submit', saveReservation);
+
+            // Character counter for purpose
+            document.getElementById('purpose').addEventListener('input', function() {
+                const count = this.value.length;
+                document.getElementById('purposeCount').textContent = `${count}/500`;
+            });
+
+            setupSearch();
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('residentSearch');
+            const searchResults = document.getElementById('searchResults');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                
+                if (searchTerm.length < 2) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+
+                const filtered = residents.filter(r => {
+                    const fullName = `${r.first_name} ${r.middle_name || ''} ${r.last_name}`.toLowerCase();
+                    return fullName.includes(searchTerm);
+                });
+
+                displaySearchResults(filtered);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
+            });
+        }
+
+        function displaySearchResults(results) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="search-item" role="option">No residents found</div>';
+            } else {
+                searchResults.innerHTML = results.map(r => `
+                    <div class="search-item" data-resident-id="${r.resident_id}" role="option" tabindex="0">
+                        <strong>${r.last_name}, ${r.first_name}</strong><br>
+                        <small>${r.contact_number || 'No contact'}</small>
+                    </div>
+                `).join('');
+
+                searchResults.querySelectorAll('.search-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const resident = residents.find(r => r.resident_id == this.dataset.residentId);
+                        if (resident) selectResident(resident);
+                    });
+                    
+                    item.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            const resident = residents.find(r => r.resident_id == item.dataset.residentId);
+                            if (resident) selectResident(resident);
+                        }
+                    });
+                });
+            }
+            
+            searchResults.style.display = 'block';
+        }
+
+        function selectResident(resident) {
+            document.getElementById('selectedResidentId').value = resident.resident_id;
+            document.getElementById('residentSearch').value = ''; // Clear search input
+            document.getElementById('searchResults').style.display = 'none';
+            
+            const selectedDiv = document.getElementById('selectedResident');
+            selectedDiv.innerHTML = `
+                <strong>Selected:</strong> ${resident.last_name}, ${resident.first_name}
+                <button class="resident-change-btn" onclick="clearSelectedResident()" aria-label="Change selected resident">Change</button>
+            `;
+            selectedDiv.style.display = 'block';
+            formChanged = true;
+        }
+
+        window.clearSelectedResident = function() {
+            document.getElementById('selectedResidentId').value = '';
+            document.getElementById('selectedResident').style.display = 'none';
+            document.getElementById('residentSearch').value = '';
+            formChanged = true;
+        };
+
+        function clearErrors() {
+            document.querySelectorAll('.form-control-modern.error').forEach(el => {
+                el.classList.remove('error');
+            });
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.textContent = '';
+            });
+        }
+
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(fieldId + 'Error');
+            if (field && errorDiv) {
+                field.classList.add('error');
+                errorDiv.textContent = message;
+            }
+        }
+
+        function validateTimes(startTime, endTime, date, facilityId) {
+            if (startTime >= endTime) {
+                showError('endTime', 'End time must be after start time');
+                return false;
+            }
+            
+            // Check if date is in the past
+            const today = new Date().toISOString().split('T')[0];
+            if (date < today) {
+                showError('reservationDate', 'Cannot book reservations in the past');
+                return false;
+            }
+            
+            // Check for overlapping reservations
+            const existing = reservations.filter(r => 
+                r.reservation_date === date && 
+                r.facility_id === facilityId &&
+                r.status !== 'cancelled' &&
+                r.status !== 'rejected'
+            );
+            
+            for (let r of existing) {
+                if ((startTime >= r.start_time && startTime < r.end_time) ||
+                    (endTime > r.start_time && endTime <= r.end_time) ||
+                    (startTime <= r.start_time && endTime >= r.end_time)) {
+                    showError('startTime', 'Time slot conflicts with existing reservation');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function validateForm() {
+            clearErrors();
+            let isValid = true;
+            
+            const facilityId = document.getElementById('facilitySelect').value;
+            const residentId = document.getElementById('selectedResidentId').value;
+            const date = document.getElementById('reservationDate').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const purpose = document.getElementById('purpose').value;
+            
+            if (!facilityId) {
+                showError('facilitySelect', 'Please select a facility');
+                isValid = false;
+            }
+            
+            if (!residentId) {
+                showError('residentSearch', 'Please select a resident');
+                isValid = false;
+            }
+            
+            if (!date) {
+                showError('reservationDate', 'Please select a date');
+                isValid = false;
+            }
+            
+            if (!startTime) {
+                showError('startTime', 'Please select start time');
+                isValid = false;
+            }
+            
+            if (!endTime) {
+                showError('endTime', 'Please select end time');
+                isValid = false;
+            }
+            
+            if (!purpose) {
+                showError('purpose', 'Please enter a purpose');
+                isValid = false;
+            }
+            
+            if (isValid && facilityId && date && startTime && endTime) {
+                if (!validateTimes(startTime, endTime, date, facilityId)) {
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                if (modalId === 'reservationModal') {
+                    formChanged = false;
+                }
+            }
+        }
+
+        function openModal(modalId) {
+            const allModals = document.querySelectorAll('.modal-modern');
+            allModals.forEach(modal => {
+                if (modal.id !== modalId && modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+                // Set focus to modal for accessibility
+                modal.setAttribute('tabindex', '-1');
+                modal.focus();
+            }
+        }
+
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+            
+            const icons = {
+                success: '✓',
+                error: '✗',
+                warning: '⚠',
+                info: 'ℹ'
+            };
+
+            const titles = {
+                success: 'Success',
+                error: 'Error',
+                warning: 'Warning',
+                info: 'Information'
+            };
+
+            const alert = document.createElement('div');
+            alert.className = `alert-modern ${type}`;
+            alert.id = alertId;
+            alert.setAttribute('role', 'alert');
+            alert.innerHTML = `
+                <div class="alert-icon">${icons[type]}</div>
+                <div class="alert-content-modern">
+                    <div class="alert-title-modern">${titles[type]}</div>
+                    <div class="alert-message-modern">${message}</div>
+                </div>
+                <button class="alert-close" onclick="this.parentElement.remove()" aria-label="Close alert">×</button>
+            `;
+
+            container.appendChild(alert);
+
+            setTimeout(() => {
+                const alertElement = document.getElementById(alertId);
+                if (alertElement) {
+                    alertElement.remove();
+                }
+            }, 5000);
+        }
+
+        function showLoading(elementId, isLoading) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            if (isLoading) {
+                element.innerHTML = '<div class="loading-spinner">Loading...</div>';
+            }
+        }
+
+        async function loadFacilities() {
+            showLoading('facilityFilter', true);
+            try {
+                const response = await fetch(ENDPOINTS.FACILITIES);
+                const result = await response.json();
+                
+                if (result.success) {
+                    facilities = result.data;
+                    populateFacilitySelects();
+                    updateStats();
+                } else {
+                    showAlert('Error loading facilities: ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('Facilities load error:', error);
+                showAlert('Error loading facilities. Please check your connection.', 'error');
+            }
+        }
+
+        async function loadResidents() {
+            try {
+                const response = await fetch(ENDPOINTS.RESIDENTS);
+                const result = await response.json();
+                if (result.success) {
+                    residents = result.data;
+                }
+            } catch (error) {
+                showAlert('Error loading residents', 'error');
+            }
+        }
+
+        async function loadReservations() {
+            showLoading('calendarGrid', true);
+            try {
+                const response = await fetch(ENDPOINTS.RESERVATIONS);
+                const result = await response.json();
+                
+                if (result.success) {
+                    reservations = result.data;
+                    generateCalendar();
+                    updateStats();
+                    updateTodaySchedule();
+                } else {
+                    showAlert('Error loading reservations: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error loading reservations', 'error');
+            }
+        }
+
+        function updateTodaySchedule() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayReservations = reservations.filter(r => r.reservation_date === today).slice(0, 4);
+            
+            const listContainer = document.getElementById('todayScheduleList');
+            if (todayReservations.length > 0) {
+                listContainer.innerHTML = todayReservations.map(r => `
+                    <div class="schedule-item" onclick="viewReservation(${r.id})" data-tooltip="Click to view details">
+                        <span class="schedule-time">${formatTime(r.start_time)}</span>
+                        <span class="schedule-dot ${r.status === 'pending' ? 'pending' : 'approved'}"></span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">${r.facility_name}</div>
+                            <div class="schedule-name">${r.first_name}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                listContainer.innerHTML = '<div class="schedule-item">No reservations today</div>';
+            }
+        }
+
+        function populateFacilitySelects() {
+            const facilitySelect = document.getElementById('facilitySelect');
+            const facilityFilter = document.getElementById('facilityFilter');
+            
+            facilitySelect.innerHTML = '<option value="">Select Facility</option>';
+            facilityFilter.innerHTML = '<option value="">All Facilities</option>';
+            
+            facilities.forEach(facility => {
+                const option = `<option value="${facility.id}">${facility.name}</option>`;
+                facilitySelect.innerHTML += option;
+                facilityFilter.innerHTML += option;
+            });
+        }
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const calendarTitle = document.getElementById('calendarTitle');
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            calendarTitle.textContent = currentDate.toLocaleDateString('en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            calendarGrid.innerHTML = '';
+            
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            days.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'weekday-modern';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay();
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+            
+            for (let i = startDay - 1; i >= 0; i--) {
+                const cell = createDayCell(prevMonthLastDay - i, true);
+                calendarGrid.appendChild(cell);
+            }
+            
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const cell = createDayCell(day, false);
+                calendarGrid.appendChild(cell);
+            }
+            
+            const totalCells = 42;
+            const daysSoFar = startDay + lastDay.getDate();
+            const nextMonthDays = totalCells - daysSoFar;
+            
+            for (let day = 1; day <= nextMonthDays; day++) {
+                const cell = createDayCell(day, true);
+                calendarGrid.appendChild(cell);
+            }
+        }
+
+        function createDayCell(day, isOtherMonth) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-cell-modern';
+            if (isOtherMonth) cell.classList.add('other-month');
+            
+            const today = new Date();
+            if (!isOtherMonth && 
+                day === today.getDate() && 
+                currentDate.getMonth() === today.getMonth() && 
+                currentDate.getFullYear() === today.getFullYear()) {
+                cell.classList.add('today');
+            }
+            
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'day-number-modern';
+            dayNumber.textContent = day;
+            cell.appendChild(dayNumber);
+            
+            if (!isOtherMonth) {
+                const fullDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                addReservationsToCell(cell, fullDate);
+            }
+            
+            cell.addEventListener('click', () => {
+                if (!isOtherMonth) {
+                    const fullDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                    openAddModal(fullDate);
+                }
+            });
+            
+            return cell;
+        }
+
+        function addReservationsToCell(cell, date) {
+            const dayReservations = reservations.filter(r => {
+                if (selectedFacility && r.facility_id != selectedFacility) return false;
+                return r.reservation_date === date;
+            }).sort((a, b) => a.start_time.localeCompare(b.start_time));
+            
+            dayReservations.slice(0, 2).forEach(r => {
+                const badge = document.createElement('div');
+                badge.className = `reservation-badge-modern ${r.status}`;
+                badge.setAttribute('data-tooltip', `Click to view details`);
+                badge.innerHTML = `
+                    <strong>${formatTime(r.start_time)}</strong> ${r.facility_name}
+                `;
+                badge.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    viewReservation(r.id);
+                });
+                cell.appendChild(badge);
+            });
+            
+            if (dayReservations.length > 2) {
+                const more = document.createElement('div');
+                more.className = 'more-badge-modern';
+                more.textContent = `+${dayReservations.length - 2} more`;
+                more.setAttribute('data-tooltip', 'Click to see all reservations for this day');
+                more.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showDayReservations(date, dayReservations);
+                });
+                cell.appendChild(more);
+            }
+        }
+
+        function openAddModal(prefilledDate = '') {
+            closeModal('viewReservationModal');
+            closeModal('reservationsListModal');
+            
+            document.getElementById('modalTitle').textContent = 'New Reservation';
+            document.getElementById('reservationForm').reset();
+            document.getElementById('reservationId').value = '';
+            clearSelectedResident();
+            clearErrors();
+            formChanged = false;
+            
+            // Set min date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reservationDate').min = today;
+            
+            if (prefilledDate) {
+                document.getElementById('reservationDate').value = prefilledDate;
+            } else {
+                document.getElementById('reservationDate').value = today;
+            }
+            
+            document.getElementById('startTime').value = '08:00';
+            document.getElementById('endTime').value = '09:00';
+            document.getElementById('purposeCount').textContent = '0/500';
+            
+            openModal('reservationModal');
+        }
+
+        function openEditModal(reservationId) {
+            const reservation = reservations.find(r => r.id == reservationId);
+            if (!reservation) return;
+            
+            closeModal('viewReservationModal');
+            
+            document.getElementById('modalTitle').textContent = 'Edit Reservation';
+            document.getElementById('reservationForm').reset();
+            clearErrors();
+            
+            document.getElementById('reservationId').value = reservation.id;
+            document.getElementById('facilitySelect').value = reservation.facility_id;
+            document.getElementById('reservationDate').value = reservation.reservation_date;
+            document.getElementById('startTime').value = reservation.start_time;
+            document.getElementById('endTime').value = reservation.end_time;
+            document.getElementById('purpose').value = reservation.purpose;
+            
+            const resident = residents.find(r => r.resident_id == reservation.resident_id);
+            if (resident) selectResident(resident);
+            
+            document.getElementById('purposeCount').textContent = `${reservation.purpose?.length || 0}/500`;
+            formChanged = false;
+            
+            openModal('reservationModal');
+        }
+
+        async function saveReservation(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                showAlert('Please fix the errors in the form', 'error');
+                return;
+            }
+
+            const formData = {
+                facility_id: document.getElementById('facilitySelect').value,
+                resident_id: document.getElementById('selectedResidentId').value,
+                reservation_date: document.getElementById('reservationDate').value,
+                start_time: document.getElementById('startTime').value,
+                end_time: document.getElementById('endTime').value,
+                purpose: document.getElementById('purpose').value
+            };
+            
+            const reservationId = document.getElementById('reservationId').value;
+            
+            try {
+                let response;
+                if (reservationId) {
+                    formData.reservation_id = reservationId;
+                    response = await fetch(ENDPOINTS.UPDATE_RESERVATION, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                } else {
+                    response = await fetch(ENDPOINTS.SAVE_RESERVATION, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert(result.message, 'success');
+                    formChanged = false;
+                    setTimeout(() => {
+                        closeModal('reservationModal');
+                        loadReservations();
+                    }, 1500);
+                } else {
+                    showAlert('Error: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error saving reservation. Please try again.', 'error');
+            }
+        }
+
+        function viewReservation(reservationId) {
+            const reservation = reservations.find(r => r.id == reservationId);
+            if (!reservation) return;
+            
+            closeModal('reservationsListModal');
+            
+            const details = document.getElementById('reservationDetails');
+            details.innerHTML = `
+                <div style="background: #f0f5fa; padding: 1.5rem; border-radius: 12px;">
+                    <h3 style="color: #1e4a7a; margin-bottom: 1rem;">${reservation.facility_name}</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-weight: 600; color: #1e4a7a;">Resident</div>
+                        <div>${reservation.first_name} ${reservation.last_name}</div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <div style="font-weight: 600; color: #1e4a7a;">Date</div>
+                            <div>${formatDate(reservation.reservation_date)}</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #1e4a7a;">Time</div>
+                            <div>${formatTime(reservation.start_time)} - ${formatTime(reservation.end_time)}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-weight: 600; color: #1e4a7a;">Purpose</div>
+                        <div>${reservation.purpose || 'N/A'}</div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-weight: 600; color: #1e4a7a;">Status</div>
+                        <span style="display: inline-block; padding: 0.3rem 1rem; background: ${getStatusColor(reservation.status)}; border-radius: 20px; font-size: 0.8rem;">
+                            ${reservation.status.toUpperCase()}
+                        </span>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.8rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                        ${reservation.status !== 'approved' ? 
+                            `<button class="btn btn-primary" onclick="updateReservationStatus(${reservation.id}, 'approved')">Approve</button>` : ''}
+                        ${reservation.status !== 'rejected' ? 
+                            `<button class="btn btn-danger" onclick="updateReservationStatus(${reservation.id}, 'rejected')">Reject</button>` : ''}
+                        <button class="btn btn-outline" onclick="openEditModal(${reservation.id})">Edit</button>
+                        <button class="btn btn-outline" style="border-color: var(--danger); color: var(--danger);" onclick="deleteReservation(${reservation.id})">Delete</button>
+                    </div>
+                </div>
+            `;
+            
+            openModal('viewReservationModal');
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                pending: '#fff3cd',
+                approved: '#dae6f5',
+                rejected: '#ffe6e6',
+                cancelled: '#f5f5f5'
+            };
+            return colors[status] || '#f5f5f5';
+        }
+
+        async function updateReservationStatus(reservationId, status) {
+            showConfirmDialog(
+                'Confirm Status Change',
+                `Are you sure you want to ${status} this reservation?`,
+                async () => {
+                    try {
+                        const response = await fetch(ENDPOINTS.UPDATE_STATUS, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ reservation_id: reservationId, status })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            showAlert(`Reservation ${status} successfully`, 'success');
+                            closeModal('viewReservationModal');
+                            loadReservations();
+                        } else {
+                            showAlert('Error: ' + result.error, 'error');
+                        }
+                    } catch (error) {
+                        showAlert('Error updating reservation', 'error');
+                    }
+                },
+                () => {}
+            );
+        }
+
+        async function deleteReservation(reservationId) {
+            showConfirmDialog(
+                'Confirm Delete',
+                'Are you sure you want to delete this reservation? This action cannot be undone.',
+                async () => {
+                    try {
+                        const response = await fetch(ENDPOINTS.DELETE_RESERVATION, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ reservation_id: reservationId })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            showAlert('Reservation deleted successfully', 'success');
+                            closeModal('viewReservationModal');
+                            loadReservations();
+                        } else {
+                            showAlert('Error: ' + result.error, 'error');
+                        }
+                    } catch (error) {
+                        showAlert('Error deleting reservation', 'error');
+                    }
+                },
+                () => {}
+            );
+        }
+
+        function showAllReservations() {
+            const list = document.getElementById('reservationsList');
+            
+            let filtered = reservations;
+            if (selectedFacility) {
+                filtered = reservations.filter(r => r.facility_id == selectedFacility);
+            }
+            
+            filtered.sort((a, b) => a.reservation_date.localeCompare(b.reservation_date));
+            
+            if (filtered.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #1e4a7a;">No reservations found.</p>';
+            } else {
+                list.innerHTML = filtered.map(r => `
+                    <div style="background: #f0f5fa; padding: 1.2rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #b0c8e8;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap;">
+                            <div>
+                                <h4 style="color: #1e4a7a; margin-bottom: 0.5rem;">${r.facility_name}</h4>
+                                <p><strong>Date:</strong> ${formatDate(r.reservation_date)}</p>
+                                <p><strong>Time:</strong> ${formatTime(r.start_time)} - ${formatTime(r.end_time)}</p>
+                                <p><strong>Resident:</strong> ${r.first_name} ${r.last_name}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="display: inline-block; padding: 0.3rem 1rem; background: ${getStatusColor(r.status)}; border-radius: 20px; font-size: 0.8rem;">
+                                    ${r.status.toUpperCase()}
+                                </span>
+                                <div style="margin-top: 0.5rem;">
+                                    <button class="btn btn-primary" onclick="viewReservation(${r.id})">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            openModal('reservationsListModal');
+        }
+
+        function showDayReservations(date, dayReservations) {
+            const list = document.getElementById('reservationsList');
+            list.innerHTML = `<h3 style="color: #1e4a7a; margin-bottom: 1rem;">Reservations for ${formatDate(date)}</h3>`;
+            
+            dayReservations.forEach(r => {
+                list.innerHTML += `
+                    <div style="background: #f0f5fa; padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                            <div>
+                                <strong>${r.facility_name}</strong><br>
+                                ${formatTime(r.start_time)} - ${formatTime(r.end_time)}<br>
+                                <small>${r.first_name} ${r.last_name}</small>
+                            </div>
+                            <button class="btn btn-primary" onclick="viewReservation(${r.id})">View</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            openModal('reservationsListModal');
+        }
+
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            document.getElementById('totalReservations').textContent = reservations.length;
+            document.getElementById('pendingReservations').textContent = reservations.filter(r => r.status === 'pending').length;
+            document.getElementById('approvedReservations').textContent = reservations.filter(r => r.status === 'approved' && r.reservation_date === today).length;
+            document.getElementById('facilitiesCount').textContent = facilities.length;
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function formatTime(timeString) {
+            return new Date(`2000-01-01T${timeString}`).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-modern')) {
+                if (e.target.id === 'confirmModal') {
+                    closeModal('confirmModal');
+                } else {
+                    checkUnsavedChanges(() => {
+                        e.target.style.display = 'none';
+                        if (e.target.id === 'reservationModal') {
+                            formChanged = false;
+                        }
+                    });
+                }
+            }
+        });
+
+        // Prevent form submission on Enter key in inputs
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

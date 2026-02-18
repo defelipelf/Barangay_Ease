@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Immaculate - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c3a6d 0%, #1e5ca3 50%, #2d8bff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Background logo styling */
+        .background-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.08;
+            z-index: 0;
+            width: 80%;
+            max-width: 700px;
+            height: auto;
+            pointer-events: none;
+        }
+        
+        .background-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+        
+        /* Decorative floating shapes */
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            right: -150px;
+        }
+        
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -100px;
+            left: -100px;
+        }
+        
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            top: 20%;
+            left: 10%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.97);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+        }
+        
+        .logo-icon {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+        }
+        
+        .logo-icon img {
+            width: 200px;
+            height: 195px;
+            object-fit: contain;
+        }
+        
+        .logo h1 {
+            color: #1a3c6e;
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .logo .subtitle {
+            color: #5a6c7d;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        
+        .logo-divider {
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, #2d8bff, #6ab1ff);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 15px;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        
+        .form-control:focus {
+            border-color: #2d8bff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(45, 139, 255, 0.15);
+            background-color: white;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 18px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1e5ca3, #2d8bff);
+            color: white;
+            box-shadow: 0 8px 20px rgba(45, 139, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(45, 139, 255, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn i {
+            font-size: 18px;
+        }
+        
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: none;
+            animation: fadeIn 0.5s;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: linear-gradient(to right, #fee2e2, #fecaca);
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.1);
+        }
+        
+        .alert-success {
+            background: linear-gradient(to right, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 1px solid #a3d0b1;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Password toggle */
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .password-toggle:hover {
+            color: #2d8bff;
+        }
+        
+        /* Loading animation */
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Footer */
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #6b7280;
+            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+            
+            .background-logo {
+                width: 95%;
+            }
+            
+            .floating-shape {
+                display: none;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Background decorative shapes -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+    
+    <!-- Background logo -->
+    <div class="background-logo">
+        <img src="https://cdn-icons-png.flaticon.com/512/3095/3095110.png" alt="Barangay Logo">
+    </div>
+    
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <img src="image/Immaculate-removebg-preview.png" alt="Barangay Logo">
+            </div>
+            <h1>Barangay Immaculate</h1>
+            <div class="subtitle">Management System</div>
+            <div class="logo-divider"></div>
+        </div>
+        
+        <div id="messageArea" class="alert alert-error"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-container">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="username" class="form-control" required placeholder="Enter your username">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-container">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" class="form-control" required placeholder="Enter your password">
+                    <button type="button" class="password-toggle" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="loginButton">
+                <span id="buttonText">Login</span>
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+        
+        <div class="login-footer">
+            <p>Systems Plus Computer College © 2026. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script src="/Imma_Ease/api/audit/audit_logger.js"></script>
+
+    <script>
+        // Function to get client IP address (for audit logging)
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return '127.0.0.1';
+            }
+        }
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginButton = document.getElementById('loginButton');
+            const buttonText = document.getElementById('buttonText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Show loading state
+            loginButton.disabled = true;
+            buttonText.textContent = 'Authenticating...';
+            loadingSpinner.style.display = 'block';
+            
+            try {
+                const response = await fetch('/Imma_Ease/api/auth/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Store user data in localStorage
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    
+                    // ✅ AUDIT LOG - Successful Login
+                    try {
+                        const ip = await getClientIP();
+                        Audit.log('LOGIN_SUCCESS', 'AUTH', {
+                            username: username,
+                            user_id: result.user.id,
+                            user_role: result.user.role,
+                            ip_address: ip,
+                            user_agent: navigator.userAgent
+                        });
+                        console.log('✅ Audit log sent for successful login');
+                    } catch (auditError) {
+                        console.warn('⚠️ Audit log failed but login successful:', auditError);
+                    }
+                    
+                    // Show success message
+                    showMessage('Login successful! Redirecting...', 'success');
+                    
+                    // Redirect to dashboard after delay
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    // ✅ AUDIT LOG - Failed Login
+                    try {
+                        const ip = await getClientIP();
+                        Audit.log('LOGIN_FAILED', 'AUTH', {
+                            username: username,
+                            reason: result.error || 'Invalid credentials',
+                            ip_address: ip,
+                            user_agent: navigator.userAgent
+                        });
+                        console.log('✅ Audit log sent for failed login');
+                    } catch (auditError) {
+                        console.warn('⚠️ Audit log failed:', auditError);
+                    }
+                    
+                    showMessage(result.error, 'error');
+                    // Reset button
+                    loginButton.disabled = false;
+                    buttonText.textContent = 'Login';
+                    loadingSpinner.style.display = 'none';
+                }
+            } catch (error) {
+                // ✅ AUDIT LOG - Login Error (network issues, etc.)
+                try {
+                    const ip = await getClientIP();
+                    Audit.log('LOGIN_ERROR', 'AUTH', {
+                        username: username,
+                        error: error.message,
+                        ip_address: ip,
+                        user_agent: navigator.userAgent
+                    });
+                } catch (auditError) {
+                    console.warn('⚠️ Audit log failed:', auditError);
+                }
+                
+                showMessage('Login failed: ' + error.message, 'error');
+                // Reset button
+                loginButton.disabled = false;
+                buttonText.textContent = 'Login';
+                loadingSpinner.style.display = 'none';
+            }
+        });
+        
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.textContent = message;
+            messageArea.className = `alert alert-${type}`;
+            messageArea.style.display = 'block';
+            
+            // Auto-hide success messages after 3 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageArea.style.display = 'none';
+                }, 3000);
+            } else {
+                // Auto-hide error messages after 5 seconds
+                setTimeout(() => {
+                    messageArea.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Password visibility toggle
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+        
+        // Input focus effects
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('.input-icon').style.color = '#2d8bff';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.querySelector('.input-icon').style.color = '#6b7280';
+            });
+        });
+        
+        // Enter key to submit
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !document.getElementById('loginButton').disabled) {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+    
+</body>
+</html>

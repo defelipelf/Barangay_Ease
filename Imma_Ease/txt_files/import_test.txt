@@ -1,0 +1,3191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Immaculate · Resident Profiling System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        :root {
+            --primary: #0a2c4d;
+            --primary-dark: #06203a;
+            --primary-light: #1e4a6b;
+            --primary-gradient: linear-gradient(145deg, #0a2c4d, #124061);
+            --secondary: #0e6b3e;
+            --secondary-light: #1b8c4c;
+            --secondary-gradient: linear-gradient(145deg, #0e6b3e, #1a8549);
+            --accent: #c47a2d;
+            --accent-light: #e69b4a;
+            --accent-gradient: linear-gradient(145deg, #c47a2d, #d48a3a);
+            --danger: #b33a3a;
+            --danger-light: #c44a4a;
+            --danger-gradient: linear-gradient(145deg, #b33a3a, #c44a4a);
+            --info: #2a6f8a;
+            --info-light: #3a8aa8;
+            --info-gradient: linear-gradient(145deg, #2a6f8a, #35809c);
+            --success: #1e7a44;
+            --success-light: #2a9d5a;
+            --success-gradient: linear-gradient(145deg, #1e7a44, #269952);
+            --warning: #b47a2a;
+            --warning-light: #d49a3a;
+            --warning-gradient: linear-gradient(145deg, #b47a2a, #c48a3a);
+            
+            --dark: #1a2634;
+            --dark-gray: #3a4450;
+            --medium-gray: #6b747c;
+            --light-gray: #e2e8f0;
+            --lighter-gray: #f1f5f9;
+            --white: #ffffff;
+            --off-white: #f8fafc;
+            
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.08);
+            --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.12);
+            --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 24px;
+            --border-radius-full: 9999px;
+            
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+        }
+        
+        body {
+            background: var(--off-white);
+            background-image: radial-gradient(circle at 10% 20%, rgba(10, 44, 77, 0.02) 0%, transparent 30%),
+                              radial-gradient(circle at 90% 80%, rgba(12, 107, 62, 0.02) 0%, transparent 40%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            font-size: 0.95rem;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        /* ===== NAVIGATION HEADER - ELEGANT & MODERN ===== */
+        .nav-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #34d399, #60a5fa, #fbbf24);
+            z-index: 1;
+        }
+        
+        .nav-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-full);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateX(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-stats {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .nav-stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 20px;
+            border-radius: var(--border-radius-full);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+        }
+        
+        .nav-stat-icon {
+            font-size: 1.2rem;
+        }
+        
+        .nav-stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .nav-stat-label {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .nav-stat-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        
+        /* ===== MAIN HEADER - REFINED & PROFESSIONAL ===== */
+        header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 32px 36px;
+            margin-bottom: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .barangay-branding {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .branding-main {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .branding-icon {
+            font-size: 2.8rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+        
+        .branding-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .barangay-branding h1 {
+            font-size: 2.2rem;
+            margin-bottom: 4px;
+            color: white;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .barangay-branding .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+        
+        .barangay-branding .location {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 16px;
+            border-radius: var(--border-radius-full);
+            width: fit-content;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 28px;
+            border-radius: var(--border-radius-lg);
+            text-align: right;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-info p {
+            margin: 6px 0;
+            font-size: 0.95rem;
+        }
+        
+        .user-info strong {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .user-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: var(--border-radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* ===== STATS CARDS - ELEVATED & MODERN ===== */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            padding: 28px 24px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(10, 44, 77, 0.1);
+        }
+        
+        .stat-icon {
+            font-size: 2.4rem;
+            margin-bottom: 16px;
+            background: var(--lighter-gray);
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius-full);
+            color: var(--primary);
+            border: 1px solid rgba(10, 44, 77, 0.1);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover .stat-icon {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .stat-card h3 {
+            font-size: 2.4rem;
+            color: var(--dark);
+            margin-bottom: 6px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .stat-card p {
+            color: var(--medium-gray);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-trend {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--success);
+            background: rgba(30, 122, 68, 0.1);
+            padding: 4px 12px;
+            border-radius: var(--border-radius-full);
+        }
+        
+        /* ===== ACTIONS SECTION - STREAMLINED ===== */
+        .actions-section {
+            background: var(--white);
+            padding: 24px 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 32px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .search-add-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-wrapper {
+            flex-grow: 1;
+            position: relative;
+            min-width: 350px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 16px 24px 16px 56px;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius-full);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: var(--lighter-gray);
+            font-weight: 500;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(10, 44, 77, 0.08);
+            outline: none;
+            background: var(--white);
+        }
+        
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            color: var(--medium-gray);
+            z-index: 2;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        /* ===== BUTTONS - MODERN & ACCESSIBLE ===== */
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--border-radius-full);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(10, 44, 77, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(10, 44, 77, 0.4);
+        }
+        
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(30, 122, 68, 0.25);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(30, 122, 68, 0.35);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: none;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(10, 44, 77, 0.25);
+        }
+        
+        .btn-sm {
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            border-radius: var(--border-radius-full);
+        }
+        
+        /* ===== TABLE CONTAINER - ELEGANT ===== */
+        .residents-table-container {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            margin-top: 16px;
+        }
+        
+        .table-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 20px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .table-header h2 span {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
+            border-radius: var(--border-radius-full);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .table-count {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 8px 20px;
+            border-radius: var(--border-radius-full);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .residents-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .residents-table th {
+            background: var(--lighter-gray);
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 16px 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 2px solid var(--light-gray);
+            text-align: left;
+        }
+        
+        .residents-table td {
+            padding: 16px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+            vertical-align: middle;
+        }
+        
+        .residents-table tbody tr {
+            transition: var(--transition);
+        }
+        
+        .residents-table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(10, 44, 77, 0.02), rgba(10, 44, 77, 0.01));
+        }
+        
+        .profile-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-gradient);
+            border-radius: var(--border-radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(10, 44, 77, 0.2);
+        }
+        
+        .resident-name {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        
+        .resident-id {
+            color: var(--medium-gray);
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            background: var(--lighter-gray);
+            padding: 3px 10px;
+            border-radius: var(--border-radius-full);
+            display: inline-block;
+            font-weight: 500;
+        }
+        
+        .resident-address {
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: var(--border-radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .status-pwd {
+            background: linear-gradient(145deg, #fff3cd, #ffe69b);
+            color: #7a4a0e;
+            border: 1px solid #ffd966;
+        }
+        
+        .status-senior {
+            background: linear-gradient(145deg, #d1e7ff, #b6d4fe);
+            color: #0a4b6e;
+            border: 1px solid #9ec5fe;
+        }
+        
+        .status-4ps {
+            background: linear-gradient(145deg, #d1fae5, #a7f3d0);
+            color: #0c5e4a;
+            border: 1px solid #6ee7b7;
+        }
+        
+        .status-solo-parent {
+            background: linear-gradient(145deg, #e9ecef, #dee2e6);
+            color: #3a4a5a;
+            border: 1px solid #ced4da;
+        }
+        
+        .status-unknown {
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            color: #5a6268;
+            border: 1px solid #dae0e5;
+        }
+        
+        .action-cell {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-icon {
+            padding: 8px 16px;
+            border-radius: var(--border-radius-full);
+            font-size: 0.8rem;
+        }
+        
+        /* ===== MODALS - ELEVATED & MODERN ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: var(--white);
+            margin: 40px auto;
+            padding: 0;
+            border-radius: var(--border-radius-xl);
+            width: 90%;
+            max-width: 1000px;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .modal-header h2::before {
+            content: '👤';
+            font-size: 1.8rem;
+        }
+        
+        .close-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--border-radius-full);
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(90deg);
+        }
+        
+        .form-container {
+            padding: 32px;
+        }
+        
+        /* ===== TABS - REFINED ===== */
+        .tabs {
+            display: flex;
+            margin-bottom: 32px;
+            border-bottom: 2px solid var(--light-gray);
+            overflow-x: auto;
+            gap: 8px;
+        }
+        
+        .tab {
+            padding: 14px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            transition: var(--transition);
+            white-space: nowrap;
+            color: var(--medium-gray);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tab i {
+            font-size: 1.1rem;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .tab:hover:not(.active) {
+            color: var(--dark);
+            background-color: rgba(10, 44, 77, 0.04);
+            border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* ===== FORM ELEMENTS - CLEAN ===== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .required::after {
+            content: ' *';
+            color: var(--danger);
+            font-weight: 700;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius-md);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: var(--white);
+            font-weight: 500;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(10, 44, 77, 0.08);
+            outline: none;
+        }
+        
+        .form-control.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(179, 58, 58, 0.08);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: var(--lighter-gray);
+            border-radius: var(--border-radius-full);
+            border: 2px solid var(--light-gray);
+            transition: var(--transition);
+        }
+        
+        .checkbox-item:hover {
+            border-color: var(--primary);
+            background: rgba(10, 44, 77, 0.04);
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+        
+        /* ===== IMPORT SECTION - ENHANCED ===== */
+        .import-section {
+            background: linear-gradient(145deg, #f0f9ff, #e6f3ff);
+            border: 2px dashed var(--primary-light);
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .format-guide {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            padding: 28px;
+            margin-bottom: 24px;
+            border-left: 6px solid var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .format-tag {
+            display: inline-block;
+            background: linear-gradient(145deg, #e6f0fa, #d4e4f0);
+            color: var(--primary);
+            padding: 6px 18px;
+            border-radius: var(--border-radius-full);
+            font-size: 0.8rem;
+            margin: 5px;
+            border: 1px solid rgba(10, 44, 77, 0.2);
+            font-weight: 600;
+        }
+        
+        .detection-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 20px;
+            border-radius: var(--border-radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 5px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .badge-success {
+            background: linear-gradient(145deg, #e3f2e9, #c8e6d9);
+            color: #0e6b3e;
+            border: 1px solid #9aceb0;
+        }
+        
+        .badge-danger {
+            background: linear-gradient(145deg, #ffe6e6, #ffd6d6);
+            color: #b33a3a;
+            border: 1px solid #f0b3b3;
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 16px;
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .preview-table th {
+            background: var(--primary);
+            color: white;
+            padding: 14px 12px;
+            font-weight: 600;
+        }
+        
+        .preview-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .preview-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .preview-table tr:hover {
+            background: var(--lighter-gray);
+        }
+        
+        /* ===== ALERTS - ELEGANT ===== */
+        .alert {
+            padding: 16px 24px;
+            border-radius: var(--border-radius-md);
+            margin-bottom: 24px;
+            border-left: 6px solid;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .alert-success {
+            background: linear-gradient(145deg, #e3f2e9, #d4ecd9);
+            color: #0e6b3e;
+            border-color: #0e6b3e;
+        }
+        
+        .alert-error {
+            background: linear-gradient(145deg, #ffe6e6, #ffd9d9);
+            color: #b33a3a;
+            border-color: #b33a3a;
+        }
+        
+        .alert-warning {
+            background: linear-gradient(145deg, #fff4e0, #ffe9cc);
+            color: #b47a2a;
+            border-color: #b47a2a;
+        }
+        
+        .alert-info {
+            background: linear-gradient(145deg, #e1f0f5, #d0e4ed);
+            color: #2a6f8a;
+            border-color: #2a6f8a;
+        }
+        
+        /* ===== EMPTY STATES ===== */
+        .no-residents {
+            text-align: center;
+            padding: 80px 40px;
+            color: var(--medium-gray);
+            background: linear-gradient(145deg, var(--lighter-gray), var(--off-white));
+            border-radius: var(--border-radius-lg);
+        }
+        
+        .no-residents h3 {
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .no-residents p {
+            font-size: 1rem;
+            opacity: 0.8;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .no-residents::before {
+            content: '🏠';
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 24px;
+            opacity: 0.7;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--medium-gray);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .loading::after {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--light-gray);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .info-section {
+            margin-bottom: 30px;
+            padding: 24px;
+            background: var(--lighter-gray);
+            border-radius: var(--border-radius-md);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-section h3 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .nav-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 24px;
+            }
+            .branding-main {
+                justify-content: center;
+            }
+            .location {
+                margin: 0 auto;
+            }
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            .search-add-container {
+                flex-direction: column;
+            }
+            .search-wrapper {
+                width: 100%;
+                min-width: auto;
+            }
+            .btn-group {
+                width: 100%;
+            }
+            .btn {
+                width: 100%;
+            }
+            .action-cell {
+                flex-direction: column;
+            }
+            .modal-content {
+                margin: 20px auto;
+                width: 95%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .barangay-branding h1 {
+                font-size: 1.6rem;
+            }
+            .barangay-branding .subtitle {
+                font-size: 1rem;
+            }
+            .table-header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            .branding-icon {
+                font-size: 2rem;
+            }
+        }
+        
+        /* ===== SCROLLBAR - CUSTOM ===== */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--lighter-gray);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+            border: 2px solid var(--lighter-gray);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+        
+        /* ===== UTILITIES ===== */
+        .text-gradient {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .shadow-hover {
+            transition: var(--transition);
+        }
+        
+        .shadow-hover:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+    </style>
+    <!-- Add SheetJS for Excel parsing -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- ===== ELEVATED NAVIGATION HEADER ===== -->
+        <div class="nav-header">
+            <div class="nav-content">
+                <a href="dashboard.html" class="back-btn">
+                    <span style="font-size: 1.2rem;">←</span> Dashboard
+                </a>
+                <div class="nav-stats">
+                    <div class="nav-stat">
+                        <span class="nav-stat-icon">👥</span>
+                        <div class="nav-stat-info">
+                            <span class="nav-stat-label">Total Residents</span>
+                            <span class="nav-stat-value" id="navTotalResidents">0</span>
+                        </div>
+                    </div>
+                    <div class="nav-stat">
+                        <span class="nav-stat-icon">📋</span>
+                        <div class="nav-stat-info">
+                            <span class="nav-stat-label">Last Update</span>
+                            <span class="nav-stat-value" id="lastUpdateTime">Just now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== REFINED MAIN HEADER ===== -->
+        <header>
+            <div class="header-content">
+                <div class="barangay-branding">
+                    <div class="branding-main">
+                        <span class="branding-icon">🏛️</span>
+                        <div class="branding-text">
+                            <h1>Barangay Immaculate</h1>
+                            <div class="subtitle">Resident Profiling System</div>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <span>📍</span> Municipality of [Your Municipality], Province of [Your Province]
+                    </div>
+                </div>
+                <div class="user-info">
+                    <p style="font-size: 1rem; opacity: 0.9;">Welcome back,</p>
+                    <p><strong>Barangay Secretary</strong></p>
+                    <span class="user-badge">ADMINISTRATOR</span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- ===== MODERN STATS CARDS ===== -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <h3 id="totalResidents">0</h3>
+                <p>Total Residents</p>
+                <span class="stat-trend">⬆️ Active</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🧓</div>
+                <h3 id="seniorCitizens">0</h3>
+                <p>Senior Citizens</p>
+                <span class="stat-trend">🎂 60+ years</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">♿</div>
+                <h3 id="pwdResidents">0</h3>
+                <p>PWD Residents</p>
+                <span class="stat-trend">🤝 Inclusive</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏠</div>
+                <h3 id="fourPsResidents">0</h3>
+                <p>4Ps Beneficiaries</p>
+                <span class="stat-trend">📊 Pantawid</span>
+            </div>
+        </div>
+        
+        <!-- ===== STREAMLINED ACTIONS SECTION ===== -->
+        <div class="actions-section">
+            <div class="search-add-container">
+                <div class="search-wrapper">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search residents by name, address, or contact number...">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="addResidentBtn">
+                        <span style="font-size: 1.2rem;">+</span> Add New Resident
+                    </button>
+                    <button class="btn btn-success" id="importExcelBtn">
+                        <span style="font-size: 1.2rem;">📊</span> Import from Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="messageArea"></div>
+        
+        <!-- ===== ELEGANT RESIDENTS TABLE ===== -->
+        <div class="residents-table-container">
+            <div class="table-header">
+                <h2>
+                    👥 Residents of Barangay Immaculate
+                    <span>Master List</span>
+                </h2>
+                <div class="table-count">
+                    Total: <span id="residentCount">0</span> residents
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="residents-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Photo</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Address</th>
+                            <th>Mobile</th>
+                            <th>Occupation</th>
+                            <th>Status</th>
+                            <th>Blood Type</th>
+                            <th style="width: 180px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="residentsTableBody">
+                        <tr>
+                            <td colspan="10" class="loading">Loading residents of Barangay Immaculate</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- ===== ADD/EDIT RESIDENT MODAL - ENHANCED ===== -->
+        <div id="residentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Add New Resident</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="form-container">
+                    <form id="residentForm">
+                        <input type="hidden" id="residentId">
+                        
+                        <div class="tabs">
+                            <div class="tab active" data-tab="personal">
+                                <span>📋</span> Personal Information
+                            </div>
+                            <div class="tab" data-tab="health">
+                                <span>🩺</span> Health Information
+                            </div>
+                            <div class="tab" data-tab="education">
+                                <span>🎓</span> Education & Employment
+                            </div>
+                            <div class="tab" data-tab="voter">
+                                <span>🗳️</span> Voter Information
+                            </div>
+                        </div>
+                        
+                        <!-- Personal Information Tab -->
+                        <div class="tab-content active" id="personal-tab">
+                            <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 24px;">
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="firstName" class="required">First Name</label>
+                                        <input type="text" id="firstName" class="form-control" required>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="middleName">Middle Name</label>
+                                        <input type="text" id="middleName" class="form-control">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="lastName" class="required">Last Name</label>
+                                        <input type="text" id="lastName" class="form-control" required>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 24px;">
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="birthDate" class="required">Birth Date</label>
+                                        <input type="date" id="birthDate" class="form-control" required>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="sex" class="required">Gender</label>
+                                        <select id="sex" class="form-control" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="civilStatus" class="required">Civil Status</label>
+                                        <select id="civilStatus" class="form-control" required>
+                                            <option value="">Select Status</option>
+                                            <option value="Single">Single</option>
+                                            <option value="Married">Married</option>
+                                            <option value="Widowed">Widowed</option>
+                                            <option value="Separated">Separated</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 24px;">
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="contactNumber">Mobile Number</label>
+                                        <input type="text" id="contactNumber" class="form-control" placeholder="0912 345 6789">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 24px;">
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="houseNo" class="required">House No.</label>
+                                        <input type="text" id="houseNo" class="form-control" required placeholder="e.g., 123 or 123-A">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="street" class="required">Street/Purok</label>
+                                        <input type="text" id="street" class="form-control" required placeholder="e.g., Purok 1">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Special Categories</label>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isPwd">
+                                        <label for="isPwd">Person with Disability (PWD)</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isSenior">
+                                        <label for="isSenior">Senior Citizen</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isSoloParent">
+                                        <label for="isSoloParent">Solo Parent</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="is4ps">
+                                        <label for="is4ps">4Ps Beneficiary</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Health Information Tab -->
+                        <div class="tab-content" id="health-tab">
+                            <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 24px;">
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="bloodType">Blood Type</label>
+                                        <select id="bloodType" class="form-control">
+                                            <option value="">Select Blood Type</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="vaccinationStatus">Vaccination Status</label>
+                                        <select id="vaccinationStatus" class="form-control">
+                                            <option value="">Select Status</option>
+                                            <option value="Fully Vaccinated">Fully Vaccinated</option>
+                                            <option value="Partially Vaccinated">Partially Vaccinated</option>
+                                            <option value="Not Vaccinated">Not Vaccinated</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="knownAllergies">Known Allergies</label>
+                                <textarea id="knownAllergies" class="form-control" rows="3" placeholder="List any known allergies..."></textarea>
+                                <div class="error-message"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="preExistingConditions">Pre-existing Medical Conditions</label>
+                                <textarea id="preExistingConditions" class="form-control" rows="3" placeholder="List any pre-existing medical conditions..."></textarea>
+                                <div class="error-message"></div>
+                            </div>
+                            
+                            <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 24px;">
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="emergencyContactName">Emergency Contact Name</label>
+                                        <input type="text" id="emergencyContactName" class="form-control" placeholder="Full name">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="emergencyContactNumber">Emergency Contact Number</label>
+                                        <input type="text" id="emergencyContactNumber" class="form-control" placeholder="Contact number">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Education & Employment Tab -->
+                        <div class="tab-content" id="education-tab">
+                            <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 24px;">
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="highestEducation">Highest Educational Attainment</label>
+                                        <select id="highestEducation" class="form-control">
+                                            <option value="">Select</option>
+                                            <option value="Elementary">Elementary</option>
+                                            <option value="High School">High School</option>
+                                            <option value="Vocational">Vocational</option>
+                                            <option value="College">College</option>
+                                            <option value="Postgraduate">Postgraduate</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="employmentStatus">Employment Status</label>
+                                        <select id="employmentStatus" class="form-control">
+                                            <option value="">Select</option>
+                                            <option value="Employed">Employed</option>
+                                            <option value="Unemployed">Unemployed</option>
+                                            <option value="Student">Student</option>
+                                            <option value="Retired">Retired</option>
+                                            <option value="Self-Employed">Self-Employed</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="occupation">Occupation/Profession</label>
+                                <input type="text" id="occupation" class="form-control" placeholder="Current occupation">
+                                <div class="error-message"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Voter Information Tab -->
+                        <div class="tab-content" id="voter-tab">
+                            <div class="form-group">
+                                <div class="checkbox-item" style="display: inline-flex;">
+                                    <input type="checkbox" id="isRegistered">
+                                    <label for="isRegistered">Registered Voter in Barangay Immaculate</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 24px;">
+                                <div class="form-col" style="flex: 1; min-width: 200px;">
+                                    <div class="form-group">
+                                        <label for="precinctNumber">Precinct Number</label>
+                                        <input type="text" id="precinctNumber" class="form-control" placeholder="e.g., 001A">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-buttons" style="display: flex; justify-content: flex-end; gap: 16px; margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--light-gray);">
+                            <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Resident</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== VIEW RESIDENT MODAL - ENHANCED ===== -->
+        <div id="viewResidentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="viewModalTitle">Resident Information</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="form-container">
+                    <div id="residentDetails"></div>
+                    <div class="footer-buttons" style="display: flex; justify-content: flex-end; margin-top: 24px;">
+                        <button type="button" class="btn btn-primary" id="closeViewBtn">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== IMPORT EXCEL MODAL - ELEVATED ===== -->
+        <div id="importModal" class="modal">
+            <div class="modal-content" style="max-width: 1100px;">
+                <div class="modal-header">
+                    <h2 style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.8rem;">📊</span> Import from Excel/CSV
+                    </h2>
+                    <button class="close-btn" id="closeImportModal">&times;</button>
+                </div>
+                <div class="form-container">
+                    <div class="format-guide">
+                        <h3 style="color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 1.8rem;">📋</span> Smart Excel Import
+                        </h3>
+                        <p style="margin-bottom: 20px; color: var(--dark-gray);">Your Excel file can have ANY column names. Our system automatically detects them:</p>
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;">
+                            <span class="format-tag">✅ first_name</span>
+                            <span class="format-tag">✅ last_name</span>
+                            <span class="format-tag">✅ birth_date</span>
+                            <span class="format-tag">✅ sex</span>
+                            <span class="format-tag">✅ civil_status</span>
+                            <span class="format-tag">✅ house_no</span>
+                            <span class="format-tag">✅ street</span>
+                        </div>
+                        
+                        <div style="background: linear-gradient(145deg, #e8f0fe, #dae6f5); padding: 20px; border-radius: var(--border-radius-lg);">
+                            <p style="font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 1.4rem;">✨</span> Intelligent Features:
+                            </p>
+                            <ul style="margin-left: 24px; color: var(--dark); display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                                <li style="display: flex; align-items: center; gap: 8px;"><span style="color: var(--success);">✓</span> Case insensitive detection</li>
+                                <li style="display: flex; align-items: center; gap: 8px;"><span style="color: var(--success);">✓</span> Full name auto-parsing</li>
+                                <li style="display: flex; align-items: center; gap: 8px;"><span style="color: var(--success);">✓</span> Philippine format support</li>
+                                <li style="display: flex; align-items: center; gap: 8px;"><span style="color: var(--success);">✓</span> Optional fields handled</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="margin-top: 24px; display: flex; gap: 16px; align-items: center;">
+                            <button class="btn btn-outline" id="downloadTemplateBtn" style="padding: 12px 28px;">
+                                <span style="font-size: 1.1rem;">⬇️</span> Download Template
+                            </button>
+                            <span style="color: var(--medium-gray);">or use your own Excel format</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(145deg, #f8fafc, #f1f5f9); padding: 28px; border-radius: var(--border-radius-lg); margin-bottom: 24px;">
+                        <h3 style="color: var(--dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.6rem;">📤</span> Upload File
+                        </h3>
+                        <div style="display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap;">
+                            <div style="flex: 1;">
+                                <label for="importFile" style="display: block; margin-bottom: 10px; font-weight: 600; color: var(--dark);">Choose Excel or CSV file:</label>
+                                <input type="file" id="importFile" accept=".csv, .xlsx, .xls" style="width: 100%; padding: 14px; border: 2px dashed var(--primary-light); border-radius: var(--border-radius-md); background: white; color: var(--dark);">
+                                <p style="font-size: 0.8rem; color: var(--medium-gray); margin-top: 8px;">Supported formats: .csv, .xlsx, .xls (Max: 10MB)</p>
+                            </div>
+                            <button class="btn btn-primary" id="previewImportBtn" style="padding: 14px 32px;">
+                                <span style="font-size: 1.1rem;">🔍</span> Preview & Detect
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="detectionSection" style="display: none; margin-bottom: 24px;">
+                        <div style="background: linear-gradient(145deg, #e3f2fd, #d1e7ff); padding: 24px; border-radius: var(--border-radius-lg); border-left: 6px solid #1e4a6b;">
+                            <h3 style="color: #0a2c4d; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5rem;">🔎</span> Column Detection Results
+                            </h3>
+                            <div id="detectionBadges" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;"></div>
+                            <div id="missingRequiredWarning" style="display: none;">
+                                <div style="background: linear-gradient(145deg, #fff4e0, #ffe9cc); padding: 16px; border-radius: var(--border-radius-md); border-left: 4px solid #b47a2a;">
+                                    <strong style="color: #7a4a0e;">⚠️ Missing Required Fields:</strong>
+                                    <span id="missingFieldsList" style="color: #7a4a0e; margin-left: 8px;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="nameParsingPreview" style="display: none; margin-bottom: 24px;"></div>
+                    
+                    <div id="previewSection" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="color: var(--dark); display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5rem;">📋</span> Data Preview
+                            </h3>
+                            <span id="previewCount" style="background: var(--primary-gradient); color: white; padding: 8px 24px; border-radius: var(--border-radius-full); font-weight: 600; font-size: 0.9rem;"></span>
+                        </div>
+                        
+                        <div style="max-height: 350px; overflow-y: auto; border: 1px solid var(--light-gray); border-radius: var(--border-radius-md);">
+                            <table class="preview-table">
+                                <thead id="previewHeader"></thead>
+                                <tbody id="previewBody"></tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="margin-top: 28px; display: flex; justify-content: flex-end; gap: 16px;">
+                            <button class="btn btn-outline" id="cancelImportBtn">Cancel</button>
+                            <button class="btn btn-success" id="confirmImportBtn">
+                                <span style="font-size: 1.1rem;">✅</span> Import Residents
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // ORIGINAL CODE - COMPLETELY PRESERVED
+        // ALL FUNCTIONALITY 100% INTACT
+        // ============================================
+        
+        // API endpoints
+        const API_BASE = '/BARANGAY_EASE/api/residents';
+        const ENDPOINTS = {
+            GET_RESIDENTS: `${API_BASE}/get_residents.php`,
+            GET_RESIDENT: `${API_BASE}/get_resident.php`,
+            SAVE_RESIDENT: `${API_BASE}/save_resident.php`,
+            UPDATE_RESIDENT: `${API_BASE}/update_resident.php`,
+            DELETE_RESIDENT: `${API_BASE}/delete_resident.php`
+        };
+
+        // DOM Elements
+        const residentsTableBody = document.getElementById('residentsTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const addResidentBtn = document.getElementById('addResidentBtn');
+        const residentModal = document.getElementById('residentModal');
+        const viewResidentModal = document.getElementById('viewResidentModal');
+        const residentForm = document.getElementById('residentForm');
+        const messageArea = document.getElementById('messageArea');
+        const modalTitle = document.getElementById('modalTitle');
+        const viewModalTitle = document.getElementById('viewModalTitle');
+        const residentDetails = document.getElementById('residentDetails');
+        const residentCount = document.getElementById('residentCount');
+        
+        // Stats elements
+        const totalResidentsEl = document.getElementById('totalResidents');
+        const seniorCitizensEl = document.getElementById('seniorCitizens');
+        const pwdResidentsEl = document.getElementById('pwdResidents');
+        const fourPsResidentsEl = document.getElementById('fourPsResidents');
+        const navTotalResidents = document.getElementById('navTotalResidents');
+        const lastUpdateTime = document.getElementById('lastUpdateTime');
+        
+        // ============================================
+        // IMPORT FUNCTIONALITY - COMPLETELY PRESERVED
+        // ============================================
+        
+        const importExcelBtn = document.getElementById('importExcelBtn');
+        const importModal = document.getElementById('importModal');
+        const closeImportModal = document.getElementById('closeImportModal');
+        const importFile = document.getElementById('importFile');
+        const previewImportBtn = document.getElementById('previewImportBtn');
+        const confirmImportBtn = document.getElementById('confirmImportBtn');
+        const cancelImportBtn = document.getElementById('cancelImportBtn');
+        const downloadTemplateBtn = document.getElementById('downloadTemplateBtn');
+        const detectionSection = document.getElementById('detectionSection');
+        const previewSection = document.getElementById('previewSection');
+        const detectionBadges = document.getElementById('detectionBadges');
+        const missingRequiredWarning = document.getElementById('missingRequiredWarning');
+        const missingFieldsList = document.getElementById('missingFieldsList');
+        const nameParsingPreview = document.getElementById('nameParsingPreview');
+        const previewHeader = document.getElementById('previewHeader');
+        const previewBody = document.getElementById('previewBody');
+        const previewCount = document.getElementById('previewCount');
+        
+        // Import state
+        let parsedExcelData = null;
+        let detectedColumns = {};
+        
+        // Required fields
+        const REQUIRED_FIELDS = ['first_name', 'last_name', 'birth_date', 'sex', 'civil_status', 'house_no', 'street'];
+        
+        // Column mapping for detection (case insensitive)
+        const COLUMN_MAPPING = {
+            last_name: ['last name', 'lastname', 'surname', 'family name', 'apelyido', 'lname', 'last'],
+            first_name: ['first name', 'firstname', 'given name', 'fname', 'first', 'pangalan'],
+            middle_name: ['middle name', 'middlename', 'mname', 'middle initial', 'mi'],
+            full_name: ['full name', 'fullname', 'complete name', 'name', 'resident name'],
+            birth_date: ['birth date', 'birthdate', 'birthday', 'date of birth', 'dob', 'bdate'],
+            sex: ['sex', 'gender', 'kasarian'],
+            civil_status: ['civil status', 'marital status', 'status', 'civil'],
+            contact_number: ['contact', 'contact number', 'mobile', 'phone', 'cellphone', 'cp'],
+            house_no: ['house', 'house no', 'house number', 'blk', 'block', 'lot', 'unit'],
+            street: ['street', 'purok', 'sitio', 'address'],
+            is_pwd: ['pwd', 'disability', 'person with disability'],
+            is_senior: ['senior', 'senior citizen', 'sc'],
+            is_solo_parent: ['solo parent', 'single parent'],
+            is_4ps: ['4ps', 'four ps', 'pantawid'],
+            blood_type: ['blood', 'blood type', 'blood group'],
+            vaccination_status: ['vaccine', 'vaccination', 'vax'],
+            occupation: ['occupation', 'work', 'job', 'profession'],
+            is_registered_voter: ['voter', 'registered', 'registered voter'],
+            precinct_number: ['precinct', 'precinct no', 'precinct number']
+        };
+        
+        // Event Listeners for Import
+        importExcelBtn.addEventListener('click', openImportModal);
+        closeImportModal.addEventListener('click', closeImportModalFunc);
+        cancelImportBtn.addEventListener('click', closeImportModalFunc);
+        downloadTemplateBtn.addEventListener('click', downloadTemplate);
+        previewImportBtn.addEventListener('click', previewImport);
+        confirmImportBtn.addEventListener('click', confirmImport);
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === importModal) {
+                closeImportModalFunc();
+            }
+        });
+        
+        function openImportModal() {
+            importModal.style.display = 'block';
+            importFile.value = '';
+            detectionSection.style.display = 'none';
+            previewSection.style.display = 'none';
+            nameParsingPreview.style.display = 'none';
+            parsedExcelData = null;
+            detectedColumns = {};
+        }
+        
+        function closeImportModalFunc() {
+            importModal.style.display = 'none';
+        }
+        
+        function downloadTemplate() {
+            const headers = [
+                'first_name', 'last_name', 'birth_date', 'sex', 'civil_status',
+                'contact_number', 'house_no', 'street', 'is_pwd', 'is_senior',
+                'is_solo_parent', 'is_4ps', 'blood_type', 'occupation'
+            ];
+            
+            const sampleRow = [
+                'Juan', 'Dela Cruz', '1990-01-15', 'Male', 'Married',
+                '09123456789', '123', 'Purok 1', '0', '0',
+                '0', '0', 'O+', 'Farmer'
+            ];
+            
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet([headers, sampleRow]);
+            XLSX.utils.book_append_sheet(wb, ws, 'Template');
+            XLSX.writeFile(wb, 'Barangay_Immaculate_Import_Template.xlsx');
+            
+            showMessage('📥 Template downloaded successfully!', 'success');
+        }
+        
+        async function previewImport() {
+            const file = importFile.files[0];
+            if (!file) {
+                showMessage('Please select a file to import.', 'error');
+                return;
+            }
+            
+            try {
+                const data = await readExcelFile(file);
+                parsedExcelData = data;
+                
+                detectedColumns = detectColumns(data.headers);
+                
+                detectionSection.style.display = 'block';
+                renderDetectionBadges();
+                
+                checkRequiredFields();
+                
+                if (detectedColumns.full_name && data.rows.length > 0) {
+                    renderNameParsingPreview(data.rows[0][detectedColumns.full_name.index]);
+                } else {
+                    nameParsingPreview.style.display = 'none';
+                }
+                
+                renderPreview(data);
+                previewSection.style.display = 'block';
+                
+            } catch (error) {
+                showMessage('Error reading file: ' + error.message, 'error');
+            }
+        }
+        
+        function readExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheet];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+                        
+                        const headers = jsonData[0] || [];
+                        const rows = jsonData.slice(1).filter(row => 
+                            row.some(cell => cell && cell.toString().trim() !== '')
+                        );
+                        
+                        resolve({ headers, rows });
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+        
+        function detectColumns(headers) {
+            const detected = {};
+            const lowerHeaders = headers.map(h => h?.toString().toLowerCase().trim() || '');
+            
+            for (const [field, possibleNames] of Object.entries(COLUMN_MAPPING)) {
+                for (let i = 0; i < lowerHeaders.length; i++) {
+                    const header = lowerHeaders[i];
+                    if (!header) continue;
+                    
+                    const isMatch = possibleNames.some(name => 
+                        header === name || 
+                        header.includes(name) || 
+                        name.includes(header)
+                    );
+                    
+                    if (isMatch) {
+                        detected[field] = {
+                            index: i,
+                            header: headers[i]
+                        };
+                        break;
+                    }
+                }
+            }
+            
+            return detected;
+        }
+        
+        function renderDetectionBadges() {
+            let html = '';
+            
+            Object.keys(detectedColumns).forEach(field => {
+                const col = detectedColumns[field];
+                html += `<span class="detection-badge badge-success">
+                    ✅ ${field} → "${col.header}"
+                </span>`;
+            });
+            
+            REQUIRED_FIELDS.forEach(field => {
+                if (!detectedColumns[field] && field !== 'full_name') {
+                    html += `<span class="detection-badge badge-danger">
+                        ❌ ${field.replace(/_/g, ' ')}
+                    </span>`;
+                }
+            });
+            
+            detectionBadges.innerHTML = html;
+        }
+        
+        function checkRequiredFields() {
+            const missing = REQUIRED_FIELDS.filter(field => 
+                !detectedColumns[field] && field !== 'full_name'
+            );
+            
+            if (missing.length > 0) {
+                missingRequiredWarning.style.display = 'block';
+                missingFieldsList.textContent = missing.map(f => f.replace(/_/g, ' ')).join(', ');
+            } else {
+                missingRequiredWarning.style.display = 'none';
+            }
+        }
+        
+        function renderNameParsingPreview(fullName) {
+            if (!fullName) return;
+            
+            const parsed = parseFullName(fullName.toString());
+            nameParsingPreview.style.display = 'block';
+            nameParsingPreview.innerHTML = `
+                <div style="background: linear-gradient(145deg, #e8f4fd, #d1e8ff); padding: 24px; border-radius: var(--border-radius-lg); margin-bottom: 24px; border-left: 6px solid #1e4a6b;">
+                    <h4 style="color: #0a2c4d; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.6rem;">🔤</span> Smart Name Parsing Active
+                    </h4>
+                    <p style="margin-bottom: 12px;"><strong style="color: var(--dark);">Excel format detected:</strong> "${fullName}"</p>
+                    <p style="margin-bottom: 8px;"><strong style="color: var(--dark);">System will parse as:</strong></p>
+                    <div style="background: var(--primary-gradient); color: white; padding: 12px 24px; border-radius: var(--border-radius-full); display: inline-flex; align-items: center; gap: 12px; margin-top: 8px;">
+                        <span style="font-size: 1.2rem;">👤</span>
+                        <span style="font-weight: 600;">${parsed.last_name}, ${parsed.first_name} ${parsed.middle_name}</span>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--primary-dark); margin-top: 16px; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.1rem;">⚡</span> This works for all rows with "Full Name" column
+                    </p>
+                </div>
+            `;
+        }
+        
+        function parseFullName(fullNameString) {
+            if (!fullNameString || typeof fullNameString !== 'string') {
+                return { first_name: '', last_name: '', middle_name: '' };
+            }
+            
+            let name = fullNameString.trim().replace(/\s+/g, ' ');
+            
+            if (name.includes(',')) {
+                const parts = name.split(',').map(p => p.trim());
+                const lastName = parts[0];
+                const rest = parts[1] || '';
+                const nameParts = rest.split(' ').filter(p => p);
+                
+                return {
+                    last_name: lastName,
+                    first_name: nameParts[0] || '',
+                    middle_name: nameParts.slice(1).join(' ') || ''
+                };
+            }
+            
+            const parts = name.split(' ').filter(p => p);
+            
+            if (parts.length === 1) {
+                return { first_name: parts[0], last_name: '', middle_name: '' };
+            } else if (parts.length === 2) {
+                return { first_name: parts[0], last_name: parts[1], middle_name: '' };
+            } else {
+                return {
+                    first_name: parts[0],
+                    last_name: parts[parts.length - 1],
+                    middle_name: parts.slice(1, -1).join(' ')
+                };
+            }
+        }
+        
+        function renderPreview(data) {
+            const { headers, rows } = data;
+            
+            previewHeader.innerHTML = `<tr>
+                ${headers.map(h => `<th>${h || 'Column'}</th>`).join('')}
+            </tr>`;
+            
+            const previewRows = rows.slice(0, 5);
+            previewBody.innerHTML = previewRows.map(row => 
+                `<tr>${row.map(cell => {
+                    let value = cell !== undefined && cell !== null ? cell.toString() : '';
+                    if (value.length > 30) value = value.substring(0, 30) + '...';
+                    return `<td>${value || ''}</td>`;
+                }).join('')}</tr>`
+            ).join('');
+            
+            previewCount.textContent = `Showing 1-${Math.min(5, rows.length)} of ${rows.length} rows`;
+        }
+        
+        function confirmImport() {
+            if (!parsedExcelData || !parsedExcelData.rows || parsedExcelData.rows.length === 0) {
+                showMessage('No data to import.', 'error');
+                return;
+            }
+            
+            const missingRequired = REQUIRED_FIELDS.filter(field => 
+                !detectedColumns[field] && field !== 'full_name'
+            );
+            
+            if (missingRequired.length > 0 && !detectedColumns.full_name) {
+                showMessage('Cannot import: Missing required fields. Please check your Excel file.', 'error');
+                return;
+            }
+            
+            const residentsToImport = [];
+            parsedExcelData.rows.forEach((row, index) => {
+                const resident = mapRowToResident(row, index + 1);
+                residentsToImport.push(resident);
+            });
+            
+            showMessage(`⏳ Importing ${residentsToImport.length} residents to database...`, 'info');
+            
+            let successCount = 0;
+            let errorCount = 0;
+            let errorMessages = [];
+            
+            const importPromises = residentsToImport.map(async (resident) => {
+                try {
+                    const formData = {
+                        first_name: resident.first_name,
+                        middle_name: resident.middle_name || '',
+                        last_name: resident.last_name,
+                        birth_date: resident.birth_date,
+                        sex: resident.sex,
+                        civil_status: resident.civil_status,
+                        contact_number: resident.contact_number || '',
+                        house_no: resident.house_no,
+                        street: resident.street,
+                        is_pwd: resident.is_pwd || 0,
+                        is_senior: resident.is_senior || 0,
+                        is_solo_parent: resident.is_solo_parent || 0,
+                        is_4ps: resident.is_4ps || 0,
+                        health_info: resident.health_info || {
+                            blood_type: '',
+                            known_allergies: '',
+                            pre_existing_conditions: '',
+                            emergency_contact_name: '',
+                            emergency_contact_number: '',
+                            vaccination_status: ''
+                        },
+                        education_info: resident.education_info || {
+                            highest_education: '',
+                            employment_status: '',
+                            occupation: resident.education_info?.occupation || ''
+                        },
+                        voter_info: resident.voter_info || {
+                            is_registered: 0,
+                            precinct_number: ''
+                        }
+                    };
+                    
+                    const response = await fetch(ENDPOINTS.SAVE_RESIDENT, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        successCount++;
+                        return { success: true };
+                    } else {
+                        errorCount++;
+                        errorMessages.push(`Row ${resident.id}: ${result.error || 'Unknown error'}`);
+                        return { success: false, error: result.error };
+                    }
+                } catch (error) {
+                    errorCount++;
+                    errorMessages.push(`Row ${resident.id}: ${error.message}`);
+                    return { success: false, error: error.message };
+                }
+            });
+            
+            Promise.all(importPromises).then(() => {
+                closeImportModalFunc();
+                
+                if (successCount > 0) {
+                    showMessage(`✅ Successfully imported ${successCount} residents to database!`, 'success');
+                }
+                
+                if (errorCount > 0) {
+                    showMessage(`⚠️ ${errorCount} residents failed to import. ${errorMessages.slice(0, 3).join('; ')}`, 'error');
+                    console.error('Import errors:', errorMessages);
+                }
+                
+                loadResidents();
+                
+                importFile.value = '';
+                detectionSection.style.display = 'none';
+                previewSection.style.display = 'none';
+                nameParsingPreview.style.display = 'none';
+                parsedExcelData = null;
+                detectedColumns = {};
+            });
+        }
+        
+        function mapRowToResident(row, id) {
+            const resident = {
+                id: id,
+                first_name: '',
+                middle_name: '',
+                last_name: '',
+                birth_date: '',
+                sex: '',
+                civil_status: '',
+                contact_number: '',
+                house_no: '',
+                street: '',
+                is_pwd: 0,
+                is_senior: 0,
+                is_solo_parent: 0,
+                is_4ps: 0,
+                health_info: null,
+                education_info: null,
+                voter_info: null
+            };
+            
+            if (detectedColumns.full_name) {
+                const fullName = row[detectedColumns.full_name.index]?.toString() || '';
+                const parsed = parseFullName(fullName);
+                resident.last_name = parsed.last_name;
+                resident.first_name = parsed.first_name;
+                resident.middle_name = parsed.middle_name;
+            }
+            
+            Object.keys(detectedColumns).forEach(field => {
+                const col = detectedColumns[field];
+                const value = row[col.index]?.toString().trim() || '';
+                
+                if (field === 'first_name' && !resident.first_name) resident.first_name = value;
+                else if (field === 'last_name' && !resident.last_name) resident.last_name = value;
+                else if (field === 'middle_name') resident.middle_name = value;
+                else if (field === 'birth_date') resident.birth_date = formatExcelDate(value);
+                else if (field === 'sex') {
+                    const val = value.toLowerCase();
+                    if (val === 'm' || val === 'male') resident.sex = 'Male';
+                    else if (val === 'f' || val === 'female') resident.sex = 'Female';
+                    else resident.sex = value;
+                }
+                else if (field === 'civil_status') {
+                    const val = value.toLowerCase();
+                    const statusMap = { 's': 'Single', 'm': 'Married', 'w': 'Widowed', 'sep': 'Separated' };
+                    resident.civil_status = statusMap[val] || value;
+                }
+                else if (field === 'contact_number') resident.contact_number = value;
+                else if (field === 'house_no') resident.house_no = value;
+                else if (field === 'street') resident.street = value;
+                else if (field === 'is_pwd') resident.is_pwd = (value === '1' || value.toLowerCase() === 'yes' || value.toLowerCase() === 'y') ? 1 : 0;
+                else if (field === 'is_senior') resident.is_senior = (value === '1' || value.toLowerCase() === 'yes' || value.toLowerCase() === 'y') ? 1 : 0;
+                else if (field === 'is_solo_parent') resident.is_solo_parent = (value === '1' || value.toLowerCase() === 'yes' || value.toLowerCase() === 'y') ? 1 : 0;
+                else if (field === 'is_4ps') resident.is_4ps = (value === '1' || value.toLowerCase() === 'yes' || value.toLowerCase() === 'y') ? 1 : 0;
+                else if (field === 'blood_type' || field === 'vaccination_status') {
+                    if (!resident.health_info) resident.health_info = {};
+                    resident.health_info[field] = value;
+                }
+                else if (field === 'occupation') {
+                    if (!resident.education_info) resident.education_info = {};
+                    resident.education_info.occupation = value;
+                }
+                else if (field === 'is_registered_voter' || field === 'precinct_number') {
+                    if (!resident.voter_info) resident.voter_info = {};
+                    if (field === 'is_registered_voter') {
+                        resident.voter_info.is_registered = (value === '1' || value.toLowerCase() === 'yes' || value.toLowerCase() === 'y') ? 1 : 0;
+                    } else {
+                        resident.voter_info.precinct_number = value;
+                    }
+                }
+            });
+            
+            return resident;
+        }
+        
+        function formatExcelDate(dateValue) {
+            if (!dateValue) return '';
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return dateValue;
+            
+            if (!isNaN(dateValue)) {
+                try {
+                    const date = new Date((dateValue - 25569) * 86400 * 1000);
+                    return date.toISOString().split('T')[0];
+                } catch (e) {}
+            }
+            
+            try {
+                const date = new Date(dateValue);
+                if (!isNaN(date.getTime())) {
+                    return date.toISOString().split('T')[0];
+                }
+            } catch (e) {}
+            
+            return dateValue;
+        }
+        
+        // ============================================
+        // ORIGINAL FUNCTIONS - COMPLETELY UNCHANGED
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadResidents();
+            setupFormValidation();
+            
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+        });
+        
+        addResidentBtn.addEventListener('click', openAddModal);
+        searchInput.addEventListener('input', filterResidents);
+        residentForm.addEventListener('submit', saveResident);
+        
+        document.querySelectorAll('.close-btn, #cancelBtn, #closeViewBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                residentModal.style.display = 'none';
+                viewResidentModal.style.display = 'none';
+            });
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === residentModal) {
+                residentModal.style.display = 'none';
+            }
+            if (e.target === viewResidentModal) {
+                viewResidentModal.style.display = 'none';
+            }
+        });
+        
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+        
+        function setupFormValidation() {
+            const mobileInput = document.getElementById('contactNumber');
+            const emergencyMobileInput = document.getElementById('emergencyContactNumber');
+            const precinctInput = document.getElementById('precinctNumber');
+            const birthDateInput = document.getElementById('birthDate');
+            
+            const today = new Date();
+            const maxDate = today.toISOString().split('T')[0];
+            birthDateInput.max = maxDate;
+            
+            const minDate = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate());
+            birthDateInput.min = minDate.toISOString().split('T')[0];
+            
+            mobileInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                value = value.replace(/[^\d\s+\-()]/g, '');
+                
+                const digitsOnly = value.replace(/\D/g, '');
+                if (digitsOnly.length > 11) {
+                    value = value.substring(0, value.length - 1);
+                }
+                
+                e.target.value = value;
+                validateMobileNumber(e.target);
+            });
+            
+            emergencyMobileInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                value = value.replace(/[^\d\s+\-()]/g, '');
+                
+                const digitsOnly = value.replace(/\D/g, '');
+                if (digitsOnly.length > 11) {
+                    value = value.substring(0, value.length - 1);
+                }
+                
+                e.target.value = value;
+            });
+            
+            precinctInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                value = value.replace(/[^a-zA-Z0-9]/g, '');
+                e.target.value = value.toUpperCase();
+            });
+            
+            const houseNoInput = document.getElementById('houseNo');
+            houseNoInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                value = value.replace(/[^a-zA-Z0-9\-\/\s]/g, '');
+                e.target.value = value;
+            });
+            
+            const streetInput = document.getElementById('street');
+            streetInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                value = value.replace(/[^a-zA-Z0-9\s\-\.,#]/g, '');
+                e.target.value = value;
+            });
+            
+            const nameInputs = ['firstName', 'middleName', 'lastName', 'emergencyContactName'];
+            nameInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('input', function(e) {
+                        let value = e.target.value;
+                        value = value.replace(/[^a-zA-Z\s\'\-\.,]/g, '');
+                        e.target.value = value;
+                    });
+                }
+            });
+            
+            const occupationInput = document.getElementById('occupation');
+            occupationInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                value = value.replace(/[^a-zA-Z0-9\s\'\-\.,]/g, '');
+                e.target.value = value;
+            });
+        }
+        
+        function validateMobileNumber(input) {
+            const value = input.value;
+            const digitsOnly = value.replace(/\D/g, '');
+            const errorMessage = input.parentElement.querySelector('.error-message');
+            
+            if (value && digitsOnly.length < 7) {
+                input.classList.add('error');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Mobile number must be at least 7 digits';
+                    errorMessage.classList.add('show');
+                }
+                return false;
+            } else if (value && digitsOnly.length > 15) {
+                input.classList.add('error');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Mobile number cannot exceed 15 digits';
+                    errorMessage.classList.add('show');
+                }
+                return false;
+            } else if (value && !/^[\d\s+\-()]+$/.test(value)) {
+                input.classList.add('error');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Mobile number can only contain numbers, spaces, +, -, and ()';
+                    errorMessage.classList.add('show');
+                }
+                return false;
+            } else {
+                input.classList.remove('error');
+                if (errorMessage) {
+                    errorMessage.classList.remove('show');
+                }
+                return true;
+            }
+        }
+        
+        function validateForm() {
+            let isValid = true;
+            
+            document.querySelectorAll('.form-control.error').forEach(el => {
+                el.classList.remove('error');
+            });
+            document.querySelectorAll('.error-message.show').forEach(el => {
+                el.classList.remove('show');
+            });
+            
+            const requiredFields = ['firstName', 'lastName', 'birthDate', 'sex', 'civilStatus', 'houseNo', 'street'];
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorMessage = field.parentElement.querySelector('.error-message');
+                if (field && !field.value.trim()) {
+                    field.classList.add('error');
+                    if (errorMessage) {
+                        errorMessage.textContent = 'This field is required';
+                        errorMessage.classList.add('show');
+                    }
+                    isValid = false;
+                }
+            });
+            
+            const mobileInput = document.getElementById('contactNumber');
+            if (mobileInput.value.trim()) {
+                if (!validateMobileNumber(mobileInput)) {
+                    isValid = false;
+                }
+            }
+            
+            const emergencyInput = document.getElementById('emergencyContactNumber');
+            if (emergencyInput.value.trim()) {
+                const digitsOnly = emergencyInput.value.replace(/\D/g, '');
+                if (digitsOnly.length > 0 && digitsOnly.length < 7) {
+                    emergencyInput.classList.add('error');
+                    const errorMessage = emergencyInput.parentElement.querySelector('.error-message');
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Emergency contact number must be at least 7 digits';
+                        errorMessage.classList.add('show');
+                    }
+                    isValid = false;
+                }
+            }
+            
+            const birthDate = new Date(document.getElementById('birthDate').value);
+            if (birthDate > new Date()) {
+                const birthDateInput = document.getElementById('birthDate');
+                birthDateInput.classList.add('error');
+                const errorMessage = birthDateInput.parentElement.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Birth date cannot be in the future';
+                    errorMessage.classList.add('show');
+                }
+                isValid = false;
+            }
+            
+            const minDate = new Date();
+            minDate.setFullYear(minDate.getFullYear() - 120);
+            if (birthDate < minDate) {
+                const birthDateInput = document.getElementById('birthDate');
+                birthDateInput.classList.add('error');
+                const errorMessage = birthDateInput.parentElement.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Birth date cannot be more than 120 years ago';
+                    errorMessage.classList.add('show');
+                }
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        async function loadResidents() {
+            try {
+                const response = await fetch(ENDPOINTS.GET_RESIDENTS);
+                const result = await response.json();
+                
+                console.log('API Response:', result);
+                
+                if (result.success) {
+                    displayResidents(result.data);
+                    updateStats(result.data);
+                    updateLastUpdateTime();
+                } else {
+                    showMessage('Error loading residents: ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading residents:', error);
+                showMessage('Error loading residents: ' + error.message, 'error');
+                displaySampleData();
+            }
+        }
+        
+        function displayResidents(residents) {
+            residentsTableBody.innerHTML = '';
+            residentCount.textContent = residents.length;
+            
+            if (!residents || residents.length === 0) {
+                residentsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="no-residents">
+                            <h3>No Residents Found</h3>
+                            <p>Click "Add New Resident" to register the first resident of Barangay Immaculate.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            residents.forEach(resident => {
+                const age = calculateAge(resident.birth_date);
+                const status = getResidentStatus(resident);
+                
+                const mobileNumber = sanitizePhoneNumber(resident.contact_number || resident.mobile || '');
+                const address = sanitizeAddress(`${resident.house_no || ''} ${resident.street || ''}`.trim());
+                
+                const firstName = resident.first_name || '';
+                const lastName = resident.last_name || '';
+                const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || '??';
+                
+                const occupation = sanitizeText(resident.occupation || 
+                          (resident.education_info && resident.education_info.occupation) || 
+                          'N/A');
+        
+                const bloodType = sanitizeText(resident.blood_type || 
+                         (resident.health_info && resident.health_info.blood_type) || 
+                         'N/A');
+                
+                const residentId = resident.resident_id || resident.id || 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="profile-icon">
+                            ${initials}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="resident-name">${lastName}, ${firstName} ${resident.middle_name ? resident.middle_name.charAt(0) + '.' : ''}</div>
+                        <div class="resident-id">ID: ${residentId}</div>
+                    </td>
+                    <td><span style="font-weight: 600;">${age}</span></td>
+                    <td>${resident.sex || resident.gender || 'N/A'}</td>
+                    <td>
+                        <div class="resident-address">${truncateText(address, 20)}</div>
+                        <div style="font-size: 0.7rem; color: var(--medium-gray);">Brgy. Immaculate</div>
+                    </td>
+                    <td style="font-family: var(--font-mono);">${truncateText(mobileNumber, 15)}</td>
+                    <td>${truncateText(occupation, 15)}</td>
+                    <td>
+                        <span class="status-badge status-${status.class}">${status.text}</span>
+                    </td>
+                    <td><span style="font-weight: 600;">${bloodType}</span></td>
+                    <td class="action-cell">
+                        <button class="btn btn-info btn-sm btn-icon" onclick="viewResident(${residentId})" style="background: linear-gradient(145deg, #2a6f8a, #1e5a70); color: white; border: none;">View</button>
+                        <button class="btn btn-success btn-sm btn-icon" onclick="editResident(${residentId})" style="background: var(--success-gradient); color: white; border: none;">Edit</button>
+                        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteResident(${residentId})" style="background: var(--danger-gradient); color: white; border: none;">Delete</button>
+                    </td>
+                `;
+                residentsTableBody.appendChild(row);
+            });
+        }
+        
+        function sanitizePhoneNumber(phoneNumber) {
+            if (!phoneNumber || phoneNumber === 'N/A' || phoneNumber === '') return 'N/A';
+            
+            if (typeof phoneNumber !== 'string') {
+                phoneNumber = String(phoneNumber);
+            }
+            
+            const digitsOnly = phoneNumber.replace(/\D/g, '');
+            
+            if (digitsOnly.length >= 7 && digitsOnly.length <= 15) {
+                if (digitsOnly.length <= 7) {
+                    return digitsOnly.replace(/(\d{3})(\d+)/, '$1-$2');
+                } else if (digitsOnly.length <= 10) {
+                    return digitsOnly.replace(/(\d{3})(\d{3})(\d+)/, '($1) $2-$3');
+                } else {
+                    return digitsOnly.replace(/(\d{1,3})(\d{3})(\d{3})(\d+)/, '+$1 ($2) $3-$4');
+                }
+            }
+            
+            if (phoneNumber.length > 30) {
+                return phoneNumber.substring(0, 20) + '...';
+            }
+            
+            return phoneNumber;
+        }
+        
+        function sanitizeAddress(address) {
+            if (!address || address === 'N/A' || address === '') return 'N/A';
+            
+            address = address.replace(/@+/g, '');
+            address = address.replace(/\s+/g, ' ').trim();
+            
+            return address || 'N/A';
+        }
+        
+        function sanitizeText(text) {
+            if (!text || text === 'N/A' || text === '') return 'N/A';
+            
+            text = String(text).replace(/[^\w\s\-\.,#]/g, '');
+            text = text.replace(/\s+/g, ' ').trim();
+            
+            return text || 'N/A';
+        }
+        
+        function truncateText(text, maxLength) {
+            if (!text || text === 'N/A') return 'N/A';
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+        
+        function getResidentStatus(resident) {
+            if (resident.is_pwd || resident.pwd) return { text: 'PWD', class: 'pwd' };
+            if (resident.is_senior || resident.senior) return { text: 'Senior', class: 'senior' };
+            if (resident.is_solo_parent || resident.solo_parent) return { text: 'Solo Parent', class: 'solo-parent' };
+            if (resident.is_4ps || resident.fourps || resident.four_ps) return { text: '4Ps', class: '4ps' };
+            return { text: 'Regular', class: 'unknown' };
+        }
+        
+        function displaySampleData() {
+            console.log('Displaying sample data for testing');
+            const sampleData = [
+                {
+                    resident_id: 1,
+                    first_name: 'Asta',
+                    last_name: 'Labista',
+                    middle_name: '',
+                    birth_date: '2003-01-01',
+                    sex: 'Male',
+                    house_no: '232',
+                    street: 'Main Street',
+                    contact_number: '09123456789',
+                    occupation: 'Student',
+                    is_pwd: 0,
+                    is_senior: 0,
+                    is_solo_parent: 0,
+                    is_4ps: 0,
+                    blood_type: 'O+'
+                },
+                {
+                    resident_id: 2,
+                    first_name: 'Maria',
+                    last_name: 'Santos',
+                    middle_name: 'Reyes',
+                    birth_date: '1960-05-15',
+                    sex: 'Female',
+                    house_no: '123',
+                    street: 'Purok 1',
+                    contact_number: '09223344556',
+                    occupation: 'Retired Teacher',
+                    is_pwd: 0,
+                    is_senior: 1,
+                    is_solo_parent: 0,
+                    is_4ps: 0,
+                    blood_type: 'A+'
+                },
+                {
+                    resident_id: 3,
+                    first_name: 'Juan',
+                    last_name: 'Dela Cruz',
+                    middle_name: 'M',
+                    birth_date: '1990-08-20',
+                    sex: 'Male',
+                    house_no: '456',
+                    street: 'Purok 2',
+                    contact_number: '09334455667',
+                    occupation: 'Farmer',
+                    is_pwd: 1,
+                    is_senior: 0,
+                    is_solo_parent: 0,
+                    is_4ps: 1,
+                    blood_type: 'B+'
+                }
+            ];
+            
+            displayResidents(sampleData);
+            updateStats(sampleData);
+            showMessage('Using sample data. API connection may be unavailable.', 'warning');
+        }
+        
+        function updateStats(residents) {
+            totalResidentsEl.textContent = residents.length;
+            navTotalResidents.textContent = residents.length;
+            
+            const seniorCount = residents.filter(resident => {
+                return calculateAge(resident.birth_date) >= 60 || resident.is_senior;
+            }).length;
+            seniorCitizensEl.textContent = seniorCount;
+            
+            const pwdCount = residents.filter(resident => resident.is_pwd).length;
+            pwdResidentsEl.textContent = pwdCount;
+            
+            const fourPsCount = residents.filter(resident => resident.is_4ps).length;
+            fourPsResidentsEl.textContent = fourPsCount;
+        }
+        
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            lastUpdateTime.textContent = timeString;
+        }
+        
+        function calculateAge(birthDate) {
+            if (!birthDate) return 'N/A';
+            
+            const today = new Date();
+            const birth = new Date(birthDate);
+            
+            if (isNaN(birth.getTime())) return 'N/A';
+            
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            
+            return age >= 0 ? age : 'N/A';
+        }
+        
+        function filterResidents() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const rows = residentsTableBody.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(searchTerm)) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+        
+        function openAddModal() {
+            modalTitle.textContent = 'Add New Resident';
+            residentForm.reset();
+            document.getElementById('residentId').value = '';
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('birthDate').max = today;
+            document.getElementById('birthDate').value = '';
+            
+            document.querySelectorAll('.form-control.error').forEach(el => {
+                el.classList.remove('error');
+            });
+            document.querySelectorAll('.error-message.show').forEach(el => {
+                el.classList.remove('show');
+            });
+            
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab[data-tab="personal"]').classList.add('active');
+            document.getElementById('personal-tab').classList.add('active');
+            
+            residentModal.style.display = 'block';
+        }
+        
+        async function viewResident(id) {
+            try {
+                const response = await fetch(`${ENDPOINTS.GET_RESIDENT}?id=${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    const resident = data.resident;
+                    const age = calculateAge(resident.birth_date);
+                    
+                    const mobileNumber = sanitizePhoneNumber(resident.contact_number || '');
+                    const emergencyNumber = sanitizePhoneNumber(data.health_info?.emergency_contact_number || '');
+                    
+                    viewModalTitle.textContent = `${resident.first_name} ${resident.middle_name ? resident.middle_name + ' ' : ''}${resident.last_name}`;
+                    
+                    residentDetails.innerHTML = `
+                        <div class="info-section">
+                            <h3 style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5rem;">📋</span> Personal Information
+                            </h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Full Name</p>
+                                    <p style="font-weight: 600; font-size: 1.1rem;">${resident.first_name} ${resident.middle_name ? resident.middle_name + ' ' : ''}${resident.last_name}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Birth Date</p>
+                                    <p style="font-weight: 600;">${formatDate(resident.birth_date)} (${age} years old)</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Gender</p>
+                                    <p style="font-weight: 600;">${resident.sex}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Civil Status</p>
+                                    <p style="font-weight: 600;">${resident.civil_status}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Contact Number</p>
+                                    <p style="font-weight: 600; font-family: var(--font-mono);">${mobileNumber}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Address</p>
+                                    <p style="font-weight: 600;">${resident.house_no} ${resident.street}, Brgy. Immaculate</p>
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 8px;">Special Categories</p>
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                    ${resident.is_pwd ? '<span style="background: var(--warning-gradient); color: white; padding: 6px 16px; border-radius: var(--border-radius-full); font-size: 0.8rem; font-weight: 600;">PWD</span>' : ''}
+                                    ${age >= 60 || resident.is_senior ? '<span style="background: var(--info-gradient); color: white; padding: 6px 16px; border-radius: var(--border-radius-full); font-size: 0.8rem; font-weight: 600;">Senior Citizen</span>' : ''}
+                                    ${resident.is_solo_parent ? '<span style="background: var(--accent-gradient); color: white; padding: 6px 16px; border-radius: var(--border-radius-full); font-size: 0.8rem; font-weight: 600;">Solo Parent</span>' : ''}
+                                    ${resident.is_4ps ? '<span style="background: var(--success-gradient); color: white; padding: 6px 16px; border-radius: var(--border-radius-full); font-size: 0.8rem; font-weight: 600;">4Ps</span>' : ''}
+                                    ${!resident.is_pwd && age < 60 && !resident.is_solo_parent && !resident.is_4ps ? '<span style="background: var(--medium-gray); color: white; padding: 6px 16px; border-radius: var(--border-radius-full); font-size: 0.8rem; font-weight: 600;">Regular</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3 style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5rem;">🩺</span> Health Information
+                            </h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Blood Type</p>
+                                    <p style="font-weight: 600;">${data.health_info?.blood_type || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Vaccination Status</p>
+                                    <p style="font-weight: 600;">${data.health_info?.vaccination_status || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Known Allergies</p>
+                                    <p style="font-weight: 600;">${data.health_info?.known_allergies || 'None'}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Pre-existing Conditions</p>
+                                    <p style="font-weight: 600;">${data.health_info?.pre_existing_conditions || 'None'}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Emergency Contact</p>
+                                    <p style="font-weight: 600;">${data.health_info?.emergency_contact_name || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Emergency Number</p>
+                                    <p style="font-weight: 600; font-family: var(--font-mono);">${emergencyNumber}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3 style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5rem;">🎓</span> Education & Employment
+                            </h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Highest Education</p>
+                                    <p style="font-weight: 600;">${data.education_info?.highest_education || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Employment Status</p>
+                                    <p style="font-weight: 600;">${data.education_info?.employment_status || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Occupation</p>
+                                    <p style="font-weight: 600;">${data.education_info?.occupation || 'N/A'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3 style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5rem;">🗳️</span> Voter Information
+                            </h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Registered Voter</p>
+                                    <p style="font-weight: 600;">${data.voter_info?.is_registered ? 'Yes - Barangay Immaculate' : 'No'}</p>
+                                </div>
+                                <div>
+                                    <p style="color: var(--medium-gray); font-size: 0.8rem; margin-bottom: 4px;">Precinct Number</p>
+                                    <p style="font-weight: 600;">${data.voter_info?.precinct_number || 'N/A'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    viewResidentModal.style.display = 'block';
+                } else {
+                    showMessage('Error loading resident details: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error loading resident details: ' + error.message, 'error');
+            }
+        }
+        
+        async function editResident(id) {
+            try {
+                const response = await fetch(`${ENDPOINTS.GET_RESIDENT}?id=${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    const resident = data.resident;
+                    
+                    modalTitle.textContent = `Edit Resident: ${resident.first_name} ${resident.last_name}`;
+                    
+                    document.getElementById('residentId').value = resident.resident_id;
+                    document.getElementById('firstName').value = resident.first_name;
+                    document.getElementById('middleName').value = resident.middle_name || '';
+                    document.getElementById('lastName').value = resident.last_name;
+                    document.getElementById('birthDate').value = resident.birth_date;
+                    document.getElementById('sex').value = resident.sex;
+                    document.getElementById('civilStatus').value = resident.civil_status;
+                    document.getElementById('contactNumber').value = resident.contact_number || '';
+                    document.getElementById('houseNo').value = resident.house_no;
+                    document.getElementById('street').value = resident.street;
+                    document.getElementById('isPwd').checked = resident.is_pwd === 1;
+                    document.getElementById('isSenior').checked = resident.is_senior === 1;
+                    document.getElementById('isSoloParent').checked = resident.is_solo_parent === 1;
+                    document.getElementById('is4ps').checked = resident.is_4ps === 1;
+                    
+                    if (data.health_info) {
+                        document.getElementById('bloodType').value = data.health_info.blood_type || '';
+                        document.getElementById('vaccinationStatus').value = data.health_info.vaccination_status || '';
+                        document.getElementById('knownAllergies').value = data.health_info.known_allergies || '';
+                        document.getElementById('preExistingConditions').value = data.health_info.pre_existing_conditions || '';
+                        document.getElementById('emergencyContactName').value = data.health_info.emergency_contact_name || '';
+                        document.getElementById('emergencyContactNumber').value = data.health_info.emergency_contact_number || '';
+                    }
+                    
+                    if (data.education_info) {
+                        document.getElementById('highestEducation').value = data.education_info.highest_education || '';
+                        document.getElementById('employmentStatus').value = data.education_info.employment_status || '';
+                        document.getElementById('occupation').value = data.education_info.occupation || '';
+                    }
+                    
+                    if (data.voter_info) {
+                        document.getElementById('isRegistered').checked = data.voter_info.is_registered === 1;
+                        document.getElementById('precinctNumber').value = data.voter_info.precinct_number || '';
+                    }
+                    
+                    document.querySelectorAll('.form-control.error').forEach(el => {
+                        el.classList.remove('error');
+                    });
+                    document.querySelectorAll('.error-message.show').forEach(el => {
+                        el.classList.remove('show');
+                    });
+                    
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.querySelector('.tab[data-tab="personal"]').classList.add('active');
+                    document.getElementById('personal-tab').classList.add('active');
+                    
+                    residentModal.style.display = 'block';
+                } else {
+                    showMessage('Error loading resident for editing: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error loading resident for editing: ' + error.message, 'error');
+            }
+        }
+        
+        async function saveResident(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                showMessage('Please fix the errors in the form before saving.', 'error');
+                return;
+            }
+            
+            const residentId = document.getElementById('residentId').value;
+            
+            const formData = {
+                first_name: document.getElementById('firstName').value.trim(),
+                middle_name: document.getElementById('middleName').value.trim(),
+                last_name: document.getElementById('lastName').value.trim(),
+                birth_date: document.getElementById('birthDate').value,
+                sex: document.getElementById('sex').value,
+                civil_status: document.getElementById('civilStatus').value,
+                contact_number: document.getElementById('contactNumber').value.trim(),
+                house_no: document.getElementById('houseNo').value.trim(),
+                street: document.getElementById('street').value.trim(),
+                is_pwd: document.getElementById('isPwd').checked ? 1 : 0,
+                is_senior: document.getElementById('isSenior').checked ? 1 : 0,
+                is_solo_parent: document.getElementById('isSoloParent').checked ? 1 : 0,
+                is_4ps: document.getElementById('is4ps').checked ? 1 : 0,
+                
+                health_info: {
+                    blood_type: document.getElementById('bloodType').value,
+                    known_allergies: document.getElementById('knownAllergies').value.trim(),
+                    pre_existing_conditions: document.getElementById('preExistingConditions').value.trim(),
+                    emergency_contact_name: document.getElementById('emergencyContactName').value.trim(),
+                    emergency_contact_number: document.getElementById('emergencyContactNumber').value.trim(),
+                    vaccination_status: document.getElementById('vaccinationStatus').value
+                },
+                
+                education_info: {
+                    highest_education: document.getElementById('highestEducation').value,
+                    employment_status: document.getElementById('employmentStatus').value,
+                    occupation: document.getElementById('occupation').value.trim()
+                },
+                
+                voter_info: {
+                    is_registered: document.getElementById('isRegistered').checked ? 1 : 0,
+                    precinct_number: document.getElementById('precinctNumber').value.trim()
+                }
+            };
+            
+            try {
+                let response;
+                let endpoint;
+                
+                if (residentId) {
+                    formData.resident_id = residentId;
+                    endpoint = ENDPOINTS.UPDATE_RESIDENT;
+                    response = await fetch(endpoint, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                } else {
+                    endpoint = ENDPOINTS.SAVE_RESIDENT;
+                    response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    loadResidents();
+                    residentModal.style.display = 'none';
+                } else {
+                    showMessage('Error saving resident: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error saving resident: ' + error.message, 'error');
+            }
+        }
+        
+        async function deleteResident(id) {
+            if (confirm('Are you sure you want to delete this resident from Barangay Immaculate records?\n\nThis action cannot be undone.')) {
+                try {
+                    const response = await fetch(ENDPOINTS.DELETE_RESIDENT, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ resident_id: id })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                        loadResidents();
+                    } else {
+                        showMessage('Error deleting resident: ' + result.error, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error deleting resident: ' + error.message, 'error');
+                }
+            }
+        }
+        
+        function showMessage(message, type) {
+            messageArea.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 3000);
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'N/A';
+            
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString(undefined, options);
+        }
+        
+        window.viewResident = viewResident;
+        window.editResident = editResident;
+        window.deleteResident = deleteResident;
+    </script>
+</body>
+</html>

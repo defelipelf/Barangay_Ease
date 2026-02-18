@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Immaculate • Document Processing</title>
+    <!-- Include jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fb;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        /* Header with centered title - WITH COLOR */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a4a8a 100%);
+            padding: 24px 32px;
+            border-radius: 20px;
+            box-shadow: 0 12px 28px rgba(30, 60, 114, 0.35);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 40px;
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            backdrop-filter: blur(5px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .back-btn i {
+            font-size: 14px;
+        }
+
+        .title-section {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .title-section h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            letter-spacing: -0.5px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.25);
+        }
+
+        .title-section p {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .title-section p i {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .header-placeholder {
+            width: 100px;
+            visibility: hidden;
+        }
+
+        /* Document Types - styled like filter tabs */
+        .document-types {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 36px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .document-type {
+            padding: 14px 32px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .document-type:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .document-type.active {
+            background: #1e3c72;
+            color: white;
+            border-color: #1e3c72;
+            box-shadow: 0 8px 16px rgba(30, 60, 114, 0.25);
+        }
+
+        .document-type i {
+            font-size: 16px;
+        }
+
+        /* Main Content - clean and simple */
+        .main-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 36px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+        }
+
+        /* Search Section */
+        .search-container {
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 18px 18px 18px 52px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            background: #fafbfc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1e3c72;
+            background: white;
+            box-shadow: 0 0 0 5px rgba(30, 60, 114, 0.15);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            margin-top: 8px;
+            max-height: 320px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .search-result-item {
+            padding: 18px 22px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: #f0f4fe;
+        }
+
+        .search-result-item strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .search-result-item small {
+            color: #64748b;
+            font-size: 13px;
+            display: block;
+            margin-top: 6px;
+        }
+
+        /* Selected Resident Card */
+        .selected-resident {
+            background: #f0f4fe;
+            border: 1px solid #bdd3ff;
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 8px rgba(30, 60, 114, 0.08);
+        }
+
+        .resident-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .resident-avatar {
+            width: 56px;
+            height: 56px;
+            background: #1e3c72;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .resident-details h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #0f172a;
+        }
+
+        .resident-details p {
+            font-size: 15px;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .change-btn {
+            padding: 10px 18px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ef4444;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .change-btn:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        /* Additional Fields */
+        .additional-fields {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 28px;
+            display: none;
+        }
+
+        .fields-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 10px;
+        }
+
+        .form-group .form-control {
+            padding: 16px 18px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .form-group .form-control:focus {
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 5px rgba(30, 60, 114, 0.15);
+            outline: none;
+        }
+
+        /* Generate Button */
+        .btn-primary {
+            width: 100%;
+            padding: 20px;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.2s;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 16px rgba(30, 60, 114, 0.25);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2a4a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Message Area */
+        .message-area {
+            margin-bottom: 24px;
+        }
+
+        .alert {
+            padding: 18px 22px;
+            border-radius: 12px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: #ecfdf3;
+            color: #067647;
+            border: 1px solid #abf0d5;
+        }
+
+        .alert-error {
+            background: #fef3f2;
+            color: #b42318;
+            border: 1px solid #fecdca;
+        }
+
+        /* Document Preview */
+        .document-preview-container {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            margin-top: 36px;
+            display: none;
+            box-shadow: 0 16px 32px rgba(0,0,0,0.1);
+        }
+
+        .preview-header {
+            padding: 22px 28px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .preview-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 14px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            color: #475569;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .btn-success {
+            background: #1e3c72;
+            color: white;
+            border-color: #1e3c72;
+        }
+
+        .btn-success:hover {
+            background: #2a4a8a;
+        }
+
+        .btn-info {
+            background: #0891b2;
+            color: white;
+            border-color: #0891b2;
+        }
+
+        .btn-info:hover {
+            background: #0e7490;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+            border-color: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .preview-content {
+            padding: 50px 40px;
+            min-height: 700px;
+            background: white;
+            border-radius: 0 0 16px 16px;
+        }
+
+        /* Document Template */
+        .document-template {
+            font-family: 'Times New Roman', Times, serif;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 2;
+            font-size: 16px;
+        }
+
+        .document-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .document-title {
+            font-size: 28px;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 40px 0;
+        }
+
+        .document-content {
+            text-align: justify;
+            margin: 40px 0;
+            font-size: 16px;
+        }
+
+        .document-signature {
+            margin-top: 100px;
+            text-align: right;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid black;
+            width: 300px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .loading p {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 16px;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            .document-preview-container, 
+            .document-preview-container * { visibility: visible; }
+            .document-preview-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+                border: none;
+            }
+            .preview-header { display: none; }
+            .preview-content { padding: 20mm; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 640px) {
+            .container { 
+                padding: 20px; 
+            }
+            
+            .header {
+                padding: 18px 20px;
+                margin-bottom: 30px;
+            }
+            
+            .title-section h1 { 
+                font-size: 22px; 
+                white-space: normal;
+            }
+            
+            .title-section p {
+                font-size: 13px;
+            }
+            
+            .back-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+                gap: 6px;
+            }
+            
+            .back-btn i {
+                font-size: 12px;
+            }
+            
+            .document-types { 
+                gap: 10px; 
+                justify-content: flex-start;
+            }
+            
+            .document-type { 
+                padding: 10px 20px; 
+                font-size: 14px; 
+            }
+            
+            .document-type i {
+                font-size: 14px;
+            }
+            
+            .main-content { 
+                padding: 24px; 
+            }
+            
+            .search-input-wrapper i {
+                left: 16px;
+                font-size: 16px;
+            }
+            
+            .form-control {
+                padding: 16px 16px 16px 48px;
+                font-size: 15px;
+            }
+            
+            .selected-resident {
+                padding: 16px 20px;
+            }
+            
+            .resident-avatar {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+            
+            .resident-details h4 {
+                font-size: 16px;
+            }
+            
+            .resident-details p {
+                font-size: 14px;
+            }
+            
+            .change-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            
+            .additional-fields {
+                padding: 22px;
+            }
+            
+            .form-group .form-control {
+                padding: 14px 16px;
+                font-size: 15px;
+            }
+            
+            .btn-primary {
+                padding: 18px;
+                font-size: 16px;
+            }
+            
+            .preview-actions { 
+                gap: 8px;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+            
+            .preview-content {
+                padding: 30px 20px;
+                min-height: 500px;
+            }
+            
+            .document-template {
+                max-width: 100%;
+                font-size: 14px;
+            }
+            
+            .document-title {
+                font-size: 24px;
+                margin: 30px 0;
+            }
+            
+            .document-content {
+                font-size: 14px;
+                margin: 30px 0;
+            }
+            
+            .signature-line {
+                width: 220px;
+            }
+            
+            .loading {
+                padding: 30px;
+            }
+            
+            .loading p {
+                font-size: 14px;
+            }
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            .document-preview-container, 
+            .document-preview-container * { visibility: visible; }
+            .document-preview-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+                border: none;
+            }
+            .preview-header { display: none; }
+            .preview-content { padding: 20mm; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 640px) {
+            .container { padding: 16px; }
+            
+            .title-section h1 { 
+                font-size: 18px; 
+                white-space: normal;
+            }
+            
+            .document-types { 
+                gap: 8px; 
+                justify-content: flex-start;
+            }
+            
+            .document-type { 
+                padding: 8px 16px; 
+                font-size: 13px; 
+            }
+            
+            .main-content { padding: 20px; }
+            
+            .preview-actions { 
+                flex-wrap: wrap; 
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Simplified Header with Back button left, title centered -->
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Dashboard
+            </a>
+            <div class="title-section">
+                <h1>Barangay Immaculate</h1>
+                <p>
+                    <i class="fas fa-file-signature"></i>
+                    Document Processing
+                </p>
+            </div>
+            <div class="header-placeholder"></div> <!-- For balance -->
+        </div>
+
+        <!-- Document Types - styled like filter tabs -->
+        <div class="document-types">
+            <div class="document-type active" data-document-type="indigency_certificate">
+                <i class="fas fa-hand-holding-heart"></i>
+                Indigency
+            </div>
+            <div class="document-type" data-document-type="barangay_clearance">
+                <i class="fas fa-check-circle"></i>
+                Clearance
+            </div>
+            <div class="document-type" data-document-type="residency_certificate">
+                <i class="fas fa-home"></i>
+                Residency
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Search Section -->
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="residentSearch" class="form-control" placeholder="Search resident by name...">
+                </div>
+                <div class="search-results" id="searchResults"></div>
+            </div>
+
+            <!-- Selected Resident -->
+            <div class="selected-resident" id="selectedResident"></div>
+
+            <!-- Additional Fields -->
+            <div class="additional-fields" id="additionalFields">
+                <div class="fields-title">
+                    <i class="fas fa-info-circle"></i>
+                    Additional Information
+                </div>
+                <div class="form-group">
+                    <label for="purpose">Purpose of Document</label>
+                    <input type="text" id="purpose" class="form-control" placeholder="e.g., Employment, Scholarship">
+                </div>
+                <div class="form-group" id="yearsResidingField" style="display: none;">
+                    <label for="yearsResiding">Years Residing in Barangay</label>
+                    <input type="text" id="yearsResiding" class="form-control" placeholder="e.g., 5 years">
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button class="btn-primary" id="generateDocumentBtn" disabled>
+                <i class="fas fa-file-pdf"></i>
+                Generate Document
+            </button>
+
+            <!-- Message Area -->
+            <div class="message-area" id="messageArea"></div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="pdfLoading">
+            <p><i class="fas fa-spinner"></i> Generating PDF... Please wait.</p>
+        </div>
+
+        <!-- Document Preview -->
+        <div class="document-preview-container" id="documentPreview">
+            <div class="preview-header">
+                <h2><i class="fas fa-file-alt"></i> Document Preview</h2>
+                <div class="preview-actions">
+                    <button class="btn btn-success" id="printBtn">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="btn btn-info" id="downloadPdfBtn">
+                        <i class="fas fa-download"></i> PDF
+                    </button>
+                    <button class="btn btn-secondary" id="newDocumentBtn">
+                        <i class="fas fa-plus"></i> New
+                    </button>
+                </div>
+            </div>
+            <div class="preview-content" id="previewContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/BARANGAY_EASE/api'; 
+        const ENDPOINTS = {
+            RESIDENT_DATA: `${API_BASE}/documents/get_resident_data.php`,
+            DOCUMENT_TEMPLATES: `${API_BASE}/documents/document_templates.php`,
+            RESIDENTS: `${API_BASE}/residents/get_residents.php`
+        };
+
+        // Global variables
+        let residents = [];
+        let templates = {};
+        let selectedDocumentType = 'indigency_certificate'; // Default active
+        let selectedResident = null;
+        let currentDocumentData = {};
+
+        // Document templates (fallback if API fails)
+        const fallbackTemplates = {
+            'indigency_certificate': {
+                'name': 'Certificate of Indigency',
+                'template': `
+                    <div class="document-template">
+                        <div class="document-header">
+                            <h1 style="margin: 0; font-size: 18px; font-weight: bold;">REPUBLIC OF THE PHILIPPINES</h1>
+                            <h2 style="margin: 5px 0; font-size: 16px; font-weight: bold;">PROVINCE OF [PROVINCE]</h2>
+                            <h3 style="margin: 5px 0; font-size: 14px; font-weight: bold;">MUNICIPALITY OF [MUNICIPALITY]</h3>
+                            <h4 style="margin: 5px 0; font-size: 13px; font-weight: bold;">BARANGAY IMMACULATE</h4>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 50px 0;">
+                            <div class="document-title">CERTIFICATE OF INDIGENCY</div>
+                        </div>
+                        
+                        <div class="document-content">
+                            <p>TO WHOM IT MAY CONCERN:</p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                This is to certify that <strong>{{full_name}}</strong>, {{age}} years old, 
+                                is a bonafide resident of {{address}}.
+                            </p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                This further certifies that the above-mentioned person belongs to an indigent family 
+                                in this barangay and is deserving of any assistance from any government or private agencies.
+                            </p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                This certification is issued upon the request of the above-named person for 
+                                <strong>{{purpose}}</strong>.
+                            </p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                Issued this <strong>{{date_issued}}</strong> at Barangay Immaculate.
+                            </p>
+                        </div>
+                        
+                        <div class="document-signature">
+                            <div class="signature-line"></div><br>
+                            <strong>HON. [BARANGAY CAPTAIN NAME]</strong><br>
+                            Punong Barangay
+                        </div>
+                    </div>
+                `
+            },
+            'barangay_clearance': {
+                'name': 'Barangay Clearance',
+                'template': `
+                    <div class="document-template">
+                        <div class="document-header">
+                            <h1 style="margin: 0; font-size: 20px; font-weight: bold;">BARANGAY CLEARANCE</h1>
+                            <h2 style="margin: 5px 0; font-size: 16px; font-weight: bold;">BARANGAY IMMACULATE</h2>
+                        </div>
+                        
+                        <div class="document-content">
+                            <p>TO WHOM IT MAY CONCERN:</p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                This is to certify that <strong>{{full_name}}</strong>, {{age}} years old, 
+                                {{civil_status}}, is a bonafide resident of {{address}}.
+                            </p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                This is to certify further that as per records of this office, the above-mentioned 
+                                person has no derogatory record and has not been charged or involved in any case 
+                                either civil or criminal in this Barangay.
+                            </p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                This certification is issued upon the request of the subject person for 
+                                <strong>{{purpose}}</strong>.
+                            </p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                Issued this <strong>{{date_issued}}</strong> at Barangay Immaculate.
+                            </p>
+                        </div>
+                        
+                        <div class="document-signature">
+                            <div class="signature-line"></div><br>
+                            <strong>HON. [BARANGAY CAPTAIN NAME]</strong><br>
+                            Punong Barangay
+                        </div>
+                    </div>
+                `
+            },
+            'residency_certificate': {
+                'name': 'Certificate of Residency',
+                'template': `
+                    <div class="document-template">
+                        <div class="document-header">
+                            <h1 style="margin: 0; font-size: 20px; font-weight: bold;">CERTIFICATE OF RESIDENCY</h1>
+                            <h2 style="margin: 5px 0; font-size: 16px; font-weight: bold;">BARANGAY IMMACULATE</h2>
+                        </div>
+                        
+                        <div class="document-content">
+                            <p>TO WHOM IT MAY CONCERN:</p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                This is to certify that <strong>{{full_name}}</strong> is a bonafide resident of {{address}}.
+                            </p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                Based on the records of this office, the above-named person has been residing in this barangay 
+                                for the past {{years_residing}} years.
+                            </p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                This certification is issued for whatever legal purpose it may serve.
+                            </p>
+                            
+                            <p style="text-indent: 50px; margin: 25px 0;">
+                                Issued this <strong>{{date_issued}}</strong> at Barangay Immaculate.
+                            </p>
+                        </div>
+                        
+                        <div class="document-signature">
+                            <div class="signature-line"></div><br>
+                            <strong>HON. [BARANGAY CAPTAIN NAME]</strong><br>
+                            Punong Barangay
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            loadResidents();
+            loadTemplates();
+            setupEventListeners();
+            
+            // Set first document type as active by default
+            document.querySelector('.document-type').classList.add('active');
+        });
+
+        function checkAuthentication() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        function setupEventListeners() {
+            // Document type selection
+            document.querySelectorAll('.document-type').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.document-type').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedDocumentType = this.getAttribute('data-document-type');
+                    updateGenerateButton();
+                    showAdditionalFields();
+                });
+            });
+
+            // Search functionality
+            document.getElementById('residentSearch').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                
+                if (searchTerm.length < 2) {
+                    document.getElementById('searchResults').style.display = 'none';
+                    return;
+                }
+
+                const filteredResidents = residents.filter(resident => {
+                    const fullName = `${resident.first_name} ${resident.middle_name || ''} ${resident.last_name}`.toLowerCase();
+                    return fullName.includes(searchTerm) || 
+                           resident.last_name.toLowerCase().includes(searchTerm) ||
+                           resident.first_name.toLowerCase().includes(searchTerm);
+                });
+
+                displaySearchResults(filteredResidents);
+            });
+
+            // Generate document button
+            document.getElementById('generateDocumentBtn').addEventListener('click', generateDocument);
+
+            // Print and download buttons
+            document.getElementById('printBtn').addEventListener('click', printDocument);
+            document.getElementById('downloadPdfBtn').addEventListener('click', downloadPDF);
+            document.getElementById('newDocumentBtn').addEventListener('click', newDocument);
+
+            // Hide search results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-container')) {
+                    document.getElementById('searchResults').style.display = 'none';
+                }
+            });
+        }
+
+        async function loadResidents() {
+            try {
+                const response = await fetch(ENDPOINTS.RESIDENTS);
+                const result = await response.json();
+                
+                if (result.success) {
+                    residents = result.data;
+                    document.getElementById('totalResidents').textContent = residents.length;
+                } else {
+                    showMessage('Error loading residents: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error loading residents: ' + error.message, 'error');
+            }
+        }
+
+        async function loadTemplates() {
+            try {
+                const response = await fetch(ENDPOINTS.DOCUMENT_TEMPLATES);
+                const result = await response.json();
+                
+                if (result.success) {
+                    templates = result.templates;
+                } else {
+                    templates = fallbackTemplates;
+                }
+            } catch (error) {
+                templates = fallbackTemplates;
+            }
+        }
+
+        function displaySearchResults(filteredResidents) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (filteredResidents.length === 0) {
+                searchResults.innerHTML = '<div class="search-result-item">No residents found</div>';
+            } else {
+                searchResults.innerHTML = filteredResidents.map(resident => `
+                    <div class="search-result-item" data-resident-id="${resident.resident_id}">
+                        <strong>${resident.last_name}, ${resident.first_name}</strong>
+                        ${resident.middle_name ? resident.middle_name + ' ' : ''}<br>
+                        <small>${resident.contact_number || 'No contact number'} • ${resident.house_no} ${resident.street}</small>
+                    </div>
+                `).join('');
+
+                searchResults.querySelectorAll('.search-result-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const residentId = this.getAttribute('data-resident-id');
+                        const resident = residents.find(r => r.resident_id == residentId);
+                        if (resident) {
+                            selectResident(resident);
+                        }
+                    });
+                });
+            }
+            
+            searchResults.style.display = 'block';
+        }
+
+        function selectResident(resident) {
+            selectedResident = resident;
+            document.getElementById('residentSearch').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+            
+            const selectedResidentDiv = document.getElementById('selectedResident');
+            selectedResidentDiv.innerHTML = `
+                <div class="resident-info">
+                    <div class="resident-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="resident-details">
+                        <h4>${resident.last_name}, ${resident.first_name} ${resident.middle_name || ''}</h4>
+                        <p><i class="fas fa-map-pin" style="font-size: 11px;"></i> ${resident.house_no} ${resident.street} • ${resident.contact_number || 'No contact'}</p>
+                    </div>
+                </div>
+                <button class="change-btn" onclick="clearSelectedResident()">
+                    <i class="fas fa-times"></i> Change
+                </button>
+            `;
+            selectedResidentDiv.style.display = 'flex';
+            
+            updateGenerateButton();
+        }
+
+        window.clearSelectedResident = function() {
+            selectedResident = null;
+            document.getElementById('selectedResident').style.display = 'none';
+            document.getElementById('residentSearch').value = '';
+            updateGenerateButton();
+        };
+
+        function updateGenerateButton() {
+            const generateBtn = document.getElementById('generateDocumentBtn');
+            generateBtn.disabled = !(selectedDocumentType && selectedResident);
+        }
+
+        function showAdditionalFields() {
+            const additionalFields = document.getElementById('additionalFields');
+            const yearsResidingField = document.getElementById('yearsResidingField');
+            
+            document.getElementById('purpose').value = '';
+            document.getElementById('yearsResiding').value = '';
+            
+            if (selectedDocumentType === 'residency_certificate') {
+                yearsResidingField.style.display = 'block';
+            } else {
+                yearsResidingField.style.display = 'none';
+            }
+            
+            additionalFields.style.display = 'block';
+        }
+
+        async function generateDocument() {
+            if (!selectedDocumentType || !selectedResident) {
+                showMessage('Please select both a document type and a resident', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${ENDPOINTS.RESIDENT_DATA}?resident_id=${selectedResident.resident_id}`);
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error);
+                }
+
+                const residentData = result.data;
+                
+                const purpose = document.getElementById('purpose').value;
+                const yearsResiding = document.getElementById('yearsResiding').value;
+
+                if (!purpose && selectedDocumentType !== 'residency_certificate') {
+                    showMessage('Please enter the purpose of the document', 'error');
+                    return;
+                }
+
+                if (selectedDocumentType === 'residency_certificate' && !yearsResiding) {
+                    showMessage('Please enter the number of years residing in the barangay', 'error');
+                    return;
+                }
+
+                const currentDate = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                currentDocumentData = {
+                    ...residentData,
+                    purpose: purpose,
+                    years_residing: yearsResiding,
+                    date_issued: currentDate
+                };
+
+                const template = templates[selectedDocumentType];
+                if (!template) {
+                    throw new Error('Template not found for selected document type');
+                }
+
+                let documentHtml = template.template;
+                
+                for (const [key, value] of Object.entries(currentDocumentData)) {
+                    const placeholder = `{{${key}}}`;
+                    documentHtml = documentHtml.replace(new RegExp(placeholder, 'g'), value || '');
+                }
+
+                document.getElementById('previewContent').innerHTML = documentHtml;
+                document.getElementById('documentPreview').style.display = 'block';
+                
+                document.getElementById('documentPreview').scrollIntoView({ behavior: 'smooth' });
+                
+                showMessage('Document generated successfully!', 'success');
+                
+            } catch (error) {
+                showMessage('Error generating document: ' + error.message, 'error');
+                console.error('Document generation error:', error);
+            }
+        }
+
+        function printDocument() {
+            const content = document.getElementById('previewContent').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Print Document</title>
+                    <style>
+                        body { 
+                            font-family: 'Times New Roman', Times, serif; 
+                            margin: 0; 
+                            padding: 20mm;
+                            line-height: 1.8;
+                        }
+                        .document-template { 
+                            width: 100%; 
+                            min-height: 100vh;
+                        }
+                        @media print {
+                            body { margin: 0; padding: 20mm; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${content}
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            setTimeout(() => window.close(), 500);
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        async function downloadPDF() {
+            const loadingElement = document.getElementById('pdfLoading');
+            const downloadBtn = document.getElementById('downloadPdfBtn');
+            
+            try {
+                loadingElement.style.display = 'block';
+                downloadBtn.disabled = true;
+                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+                const element = document.getElementById('previewContent');
+                
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+
+                const docName = templates[selectedDocumentType].name.toLowerCase().replace(/\s+/g, '_');
+                const residentName = selectedResident.last_name.toLowerCase();
+                const filename = `${docName}_${residentName}_${new Date().getTime()}.pdf`;
+
+                pdf.save(filename);
+                showMessage('PDF downloaded successfully!', 'success');
+                
+            } catch (error) {
+                showMessage('Error generating PDF: ' + error.message, 'error');
+                console.error('PDF generation error:', error);
+            } finally {
+                loadingElement.style.display = 'none';
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = '<i class="fas fa-download"></i> PDF';
+            }
+        }
+
+        function newDocument() {
+            selectedDocumentType = 'indigency_certificate';
+            selectedResident = null;
+            currentDocumentData = {};
+            
+            document.querySelectorAll('.document-type').forEach(card => {
+                card.classList.remove('active');
+                if (card.getAttribute('data-document-type') === 'indigency_certificate') {
+                    card.classList.add('active');
+                }
+            });
+            
+            document.getElementById('selectedResident').style.display = 'none';
+            document.getElementById('residentSearch').value = '';
+            document.getElementById('additionalFields').style.display = 'none';
+            document.getElementById('documentPreview').style.display = 'none';
+            document.getElementById('purpose').value = '';
+            document.getElementById('yearsResiding').value = '';
+            
+            updateGenerateButton();
+            showMessage('Ready to create new document', 'success');
+        }
+
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

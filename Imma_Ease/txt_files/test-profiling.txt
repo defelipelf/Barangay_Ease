@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Immaculate - Resident Profiling System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        :root {
+            --primary: #1e3c72;
+            --primary-light: #2a5298;
+            --secondary: #27ae60;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --gray: #95a5a6;
+            --gray-light: #ecf0f1;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            font-size: 1rem;
+        }
+        
+        .container {
+            max-width: 1700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Single Header */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #27ae60, #3498db, #f39c12);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-3px);
+        }
+        
+        .header-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .user-greeting {
+            color: white;
+            font-size: 0.95rem;
+        }
+        
+        .user-greeting strong {
+            color: white;
+            font-weight: 600;
+        }
+        
+        .role-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Actions Section */
+        .actions-section {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-add-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            flex-grow: 1;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            border: 2px solid var(--gray-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--light);
+        }
+        
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(42, 82, 152, 0.15);
+            outline: none;
+            background: white;
+        }
+        
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            color: var(--gray);
+            z-index: 2;
+        }
+        
+        /* Filter Pills */
+        .filter-section {
+            border-top: 1px solid var(--gray-light);
+            padding-top: 20px;
+        }
+        
+        .filter-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        .filter-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .filter-pill {
+            padding: 8px 20px;
+            background: var(--light);
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid var(--gray-light);
+        }
+        
+        .filter-pill:hover {
+            background: #e9ecef;
+            border-color: var(--gray);
+        }
+        
+        .filter-pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .filter-pill .count {
+            font-weight: 400;
+            margin-left: 5px;
+            color: var(--gray);
+        }
+        
+        .filter-pill.active .count {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(40, 40);
+                opacity: 0;
+            }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(42, 82, 152, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #219653);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+        }
+        
+        /* Table Container */
+        .residents-table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .table-header h2::before {
+            content: '👥';
+        }
+        
+        .table-count {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+        
+        .residents-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .residents-table th {
+            background: var(--light);
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 2px solid var(--gray-light);
+        }
+        
+        .residents-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            vertical-align: middle;
+        }
+        
+        .residents-table tbody tr:hover {
+            background-color: rgba(42, 82, 152, 0.04);
+            transform: translateX(2px);
+        }
+        
+        .residents-table tbody tr:hover td {
+            border-color: rgba(42, 82, 152, 0.2);
+        }
+        
+        .residents-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Table Cell Styles */
+        .name-cell {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .address-cell {
+            color: var(--dark);
+        }
+        
+        .address-detail {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+        
+        .contact-cell {
+            color: var(--dark);
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 4px;
+            margin-bottom: 2px;
+        }
+        
+        .status-pwd {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            color: #d35400;
+            border: 1px solid #ffb8a0;
+        }
+        
+        .status-senior {
+            background: linear-gradient(135deg, #a29bfe, #74b9ff);
+            color: #0c2461;
+            border: 1px solid #74b9ff;
+        }
+        
+        .status-4ps {
+            background: linear-gradient(135deg, #55efc4, #00b894);
+            color: #005d3a;
+            border: 1px solid #00b894;
+        }
+        
+        .status-solo {
+            background: linear-gradient(135deg, #dfe6e9, #b2bec3);
+            color: #2d3436;
+            border: 1px solid #b2bec3;
+        }
+        
+        .status-regular {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+        
+        /* Action Buttons */
+        .action-cell {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+        
+        .tooltip:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 100;
+            margin-bottom: 5px;
+        }
+        
+        /* Pagination */
+        .pagination {
+            padding: 18px 24px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light);
+        }
+        
+        .pagination-info {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        .pagination-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .pagination-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--gray-light);
+            background: white;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination-numbers {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .page-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--gray-light);
+            background: white;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .page-number:hover {
+            background: #e9ecef;
+        }
+        
+        .page-number.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Message Area */
+        .message-area {
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 16px 24px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border-color: #27ae60;
+        }
+        
+        .alert-error {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border-color: #e74c3c;
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3cd, #ffe69c);
+            color: #856404;
+            border-color: #f39c12;
+        }
+        
+        /* Loading and Empty States */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray);
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--gray-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .no-residents {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray);
+        }
+        
+        .no-residents h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .no-residents::before {
+            content: '🏠';
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: white;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        /* Form Styles */
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        .required::after {
+            content: ' *';
+            color: var(--danger);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(42, 82, 152, 0.15);
+            outline: none;
+        }
+        
+        .form-control.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.15);
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: var(--light);
+            border-radius: 8px;
+            border: 2px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        
+        .checkbox-item:hover {
+            border-color: var(--primary);
+            background: rgba(42, 82, 152, 0.05);
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--gray-light);
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            transition: var(--transition);
+            color: var(--gray);
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .tab:hover:not(.active) {
+            color: var(--dark);
+            background-color: rgba(42, 82, 152, 0.05);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .footer-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid var(--gray-light);
+        }
+        
+        /* Info Sections for View Modal */
+        .info-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-section h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-section h3::before {
+            content: '📋';
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-left {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-add-container {
+                flex-direction: column;
+            }
+            
+            .search-box, .btn-primary {
+                width: 100%;
+            }
+            
+            .residents-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .action-cell {
+                flex-direction: column;
+            }
+            
+            .pagination {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .modal-content {
+                margin: 20px auto;
+                width: 95%;
+            }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--gray-light);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Single Header -->
+        <div class="main-header">
+            <div class="header-left">
+                <a href="dashboard.html" class="back-btn">
+                    ← Back to Dashboard
+                </a>
+                <div class="header-title">Barangay Immaculate Resident Profiling</div>
+            </div>
+            <div class="header-right">
+                <span class="user-greeting">Welcome, <strong>Barangay Secretary</strong></span>
+                <span class="role-badge">ADMIN</span>
+            </div>
+        </div>
+        
+        <!-- Message Area -->
+        <div id="messageArea" class="message-area"></div>
+        
+        <!-- Actions Section -->
+        <div class="actions-section">
+            <div class="search-add-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search by name, address, or contact...">
+                </div>
+                <button class="btn btn-primary" id="addResidentBtn">
+                    <span>+</span> Add Resident
+                </button>
+            </div>
+            
+            <!-- Filter Pills -->
+            <div class="filter-section">
+                <div class="filter-label">Quick Filters</div>
+                <div class="filter-pills">
+                    <span class="filter-pill active" data-filter="all">All <span class="count" id="totalCount">0</span></span>
+                    <span class="filter-pill" data-filter="senior">Senior <span class="count" id="seniorCount">0</span></span>
+                    <span class="filter-pill" data-filter="pwd">PWD <span class="count" id="pwdCount">0</span></span>
+                    <span class="filter-pill" data-filter="4ps">4Ps <span class="count" id="fourpsCount">0</span></span>
+                    <span class="filter-pill" data-filter="solo">Solo Parent <span class="count" id="soloCount">0</span></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Residents Table Container -->
+        <div class="residents-table-container">
+            <div class="table-header">
+                <h2>Residents of Barangay Immaculate</h2>
+                <div class="table-count">
+                    Total: <span id="residentCount">0</span> residents
+                </div>
+            </div>
+            
+            <table class="residents-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Address</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="residentsTableBody">
+                    <tr>
+                        <td colspan="6" class="loading">Loading residents...</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    Showing <span id="showingStart">1</span>-<span id="showingEnd">5</span> of <span id="totalResidents">0</span> residents
+                </div>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" id="prevPage" disabled>← Prev</button>
+                    <div class="pagination-numbers" id="paginationNumbers">
+                        <!-- Pagination numbers will be generated here -->
+                    </div>
+                    <button class="pagination-btn" id="nextPage">Next →</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add/Edit Resident Modal -->
+        <div id="residentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Add New Resident</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="form-container">
+                    <form id="residentForm">
+                        <input type="hidden" id="residentId">
+                        
+                        <div class="tabs">
+                            <div class="tab active" data-tab="personal">Personal Information</div>
+                            <div class="tab" data-tab="health">Health Information</div>
+                            <div class="tab" data-tab="education">Education & Employment</div>
+                            <div class="tab" data-tab="voter">Voter Information</div>
+                        </div>
+                        
+                        <!-- Personal Information Tab -->
+                        <div class="tab-content active" id="personal-tab">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="firstName" class="required">First Name</label>
+                                        <input type="text" id="firstName" class="form-control" required>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="middleName">Middle Name</label>
+                                        <input type="text" id="middleName" class="form-control">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="lastName" class="required">Last Name</label>
+                                        <input type="text" id="lastName" class="form-control" required>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="birthDate" class="required">Birth Date</label>
+                                        <input type="date" id="birthDate" class="form-control" required>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="sex" class="required">Gender</label>
+                                        <select id="sex" class="form-control" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="civilStatus" class="required">Civil Status</label>
+                                        <select id="civilStatus" class="form-control" required>
+                                            <option value="">Select Status</option>
+                                            <option value="Single">Single</option>
+                                            <option value="Married">Married</option>
+                                            <option value="Widowed">Widowed</option>
+                                            <option value="Separated">Separated</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="contactNumber">Mobile Number</label>
+                                        <input type="text" id="contactNumber" class="form-control" placeholder="e.g., 09123456789">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="houseNo" class="required">House No</label>
+                                        <input type="text" id="houseNo" class="form-control" required placeholder="e.g., 123 or 123-A">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="street" class="required">Street/Purok</label>
+                                        <input type="text" id="street" class="form-control" required placeholder="e.g., Purok 1 or Main Street">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Special Categories (Check all that apply)</label>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isPwd">
+                                        <label for="isPwd">Person with Disability (PWD)</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isSenior">
+                                        <label for="isSenior">Senior Citizen</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isSoloParent">
+                                        <label for="isSoloParent">Solo Parent</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="is4ps">
+                                        <label for="is4ps">4Ps Beneficiary</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Health Information Tab -->
+                        <div class="tab-content" id="health-tab">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="bloodType">Blood Type</label>
+                                        <select id="bloodType" class="form-control">
+                                            <option value="">Select Blood Type</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="vaccinationStatus">Vaccination Status</label>
+                                        <select id="vaccinationStatus" class="form-control">
+                                            <option value="">Select Status</option>
+                                            <option value="Fully Vaccinated">Fully Vaccinated</option>
+                                            <option value="Partially Vaccinated">Partially Vaccinated</option>
+                                            <option value="Not Vaccinated">Not Vaccinated</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="knownAllergies">Known Allergies</label>
+                                <textarea id="knownAllergies" class="form-control" rows="2" placeholder="List any known allergies..."></textarea>
+                                <div class="error-message"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="preExistingConditions">Pre-existing Medical Conditions</label>
+                                <textarea id="preExistingConditions" class="form-control" rows="2" placeholder="List any pre-existing medical conditions..."></textarea>
+                                <div class="error-message"></div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="emergencyContactName">Emergency Contact Name</label>
+                                        <input type="text" id="emergencyContactName" class="form-control" placeholder="Full name of emergency contact">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="emergencyContactNumber">Emergency Contact Number</label>
+                                        <input type="text" id="emergencyContactNumber" class="form-control" placeholder="Contact number">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Education & Employment Tab -->
+                        <div class="tab-content" id="education-tab">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="highestEducation">Highest Educational Attainment</label>
+                                        <select id="highestEducation" class="form-control">
+                                            <option value="">Select Highest Education</option>
+                                            <option value="Elementary">Elementary</option>
+                                            <option value="High School">High School</option>
+                                            <option value="Vocational">Vocational</option>
+                                            <option value="College">College</option>
+                                            <option value="Postgraduate">Postgraduate</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="employmentStatus">Employment Status</label>
+                                        <select id="employmentStatus" class="form-control">
+                                            <option value="">Select Status</option>
+                                            <option value="Employed">Employed</option>
+                                            <option value="Unemployed">Unemployed</option>
+                                            <option value="Student">Student</option>
+                                            <option value="Retired">Retired</option>
+                                            <option value="Self-Employed">Self-Employed</option>
+                                        </select>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="occupation">Occupation/Profession</label>
+                                <input type="text" id="occupation" class="form-control" placeholder="Current occupation or profession">
+                                <div class="error-message"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Voter Information Tab -->
+                        <div class="tab-content" id="voter-tab">
+                            <div class="form-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="isRegistered">
+                                    <label for="isRegistered">Registered Voter in Barangay Immaculate</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="precinctNumber">Precinct Number</label>
+                                        <input type="text" id="precinctNumber" class="form-control" placeholder="Precinct number if registered (alphanumeric only)">
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-buttons">
+                            <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Resident</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- View Resident Modal -->
+        <div id="viewResidentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="viewModalTitle">Resident Information</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="form-container">
+                    <div id="residentDetails">
+                        <!-- Resident details will be loaded here -->
+                    </div>
+                    <div class="footer-buttons">
+                        <button type="button" class="btn btn-primary" id="closeViewBtn">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API endpoints
+        const API_BASE = '/BARANGAY_EASE/api/residents';
+        const ENDPOINTS = {
+            GET_RESIDENTS: `${API_BASE}/get_residents.php`,
+            GET_RESIDENT: `${API_BASE}/get_resident.php`,
+            SAVE_RESIDENT: `${API_BASE}/save_resident.php`,
+            UPDATE_RESIDENT: `${API_BASE}/update_resident.php`,
+            DELETE_RESIDENT: `${API_BASE}/delete_resident.php`
+        };
+
+        // DOM Elements
+        const residentsTableBody = document.getElementById('residentsTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const addResidentBtn = document.getElementById('addResidentBtn');
+        const residentModal = document.getElementById('residentModal');
+        const viewResidentModal = document.getElementById('viewResidentModal');
+        const residentForm = document.getElementById('residentForm');
+        const messageArea = document.getElementById('messageArea');
+        const modalTitle = document.getElementById('modalTitle');
+        const viewModalTitle = document.getElementById('viewModalTitle');
+        const residentDetails = document.getElementById('residentDetails');
+        const residentCount = document.getElementById('residentCount');
+        
+        // Stats elements for filter counts
+        const totalResidentsEl = document.getElementById('totalResidents');
+        const totalCountEl = document.getElementById('totalCount');
+        const seniorCountEl = document.getElementById('seniorCount');
+        const pwdCountEl = document.getElementById('pwdCount');
+        const fourpsCountEl = document.getElementById('fourpsCount');
+        const soloCountEl = document.getElementById('soloCount');
+        
+        // Pagination elements
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const showingStart = document.getElementById('showingStart');
+        const showingEnd = document.getElementById('showingEnd');
+        const paginationNumbers = document.getElementById('paginationNumbers');
+        
+        // State
+        let allResidents = [];
+        let filteredResidents = [];
+        let currentPage = 1;
+        const rowsPerPage = 5;
+        let currentFilter = 'all';
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadResidents();
+            setupFormValidation();
+            
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Set up filter pill click handlers
+            document.querySelectorAll('.filter-pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    filterByCategory(currentFilter);
+                });
+            });
+        });
+        
+        addResidentBtn.addEventListener('click', openAddModal);
+        searchInput.addEventListener('input', filterResidents);
+        residentForm.addEventListener('submit', saveResident);
+        prevPageBtn.addEventListener('click', goToPrevPage);
+        nextPageBtn.addEventListener('click', goToNextPage);
+        
+        // Close modals when clicking the close button or outside
+        document.querySelectorAll('.close-btn, #cancelBtn, #closeViewBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                residentModal.style.display = 'none';
+                viewResidentModal.style.display = 'none';
+            });
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === residentModal) {
+                residentModal.style.display = 'none';
+            }
+            if (e.target === viewResidentModal) {
+                viewResidentModal.style.display = 'none';
+            }
+        });
+        
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+        
+        // Setup form validation constraints (FULLY RESTORED)
+        function setupFormValidation() {
+            // Mobile number - only numbers
+            const mobileInput = document.getElementById('contactNumber');
+            const emergencyMobileInput = document.getElementById('emergencyContactNumber');
+            const precinctInput = document.getElementById('precinctNumber');
+            const birthDateInput = document.getElementById('birthDate');
+            
+            // Set max date to today for birth date
+            const today = new Date();
+            const maxDate = today.toISOString().split('T')[0];
+            birthDateInput.max = maxDate;
+            
+            // Set min date (assuming no one older than 120 years)
+            const minDate = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate());
+            birthDateInput.min = minDate.toISOString().split('T')[0];
+            
+            // Mobile number validation - only numbers and + (for country code)
+            mobileInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                // Allow only numbers, spaces, plus, hyphen, and parentheses
+                value = value.replace(/[^\d\s+\-()]/g, '');
+                
+                // Validate length (minimum 7, maximum 15 digits for phone numbers)
+                const digitsOnly = value.replace(/\D/g, '');
+                if (digitsOnly.length > 11) {
+                    value = value.substring(0, value.length - 1);
+                }
+                
+                e.target.value = value;
+                validateMobileNumber(e.target);
+            });
+            
+            // Emergency contact number validation
+            emergencyMobileInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                // Allow only numbers, spaces, plus, hyphen, and parentheses
+                value = value.replace(/[^\d\s+\-()]/g, '');
+                
+                // Validate length
+                const digitsOnly = value.replace(/\D/g, '');
+                if (digitsOnly.length > 11) {
+                    value = value.substring(0, value.length - 1);
+                }
+                
+                e.target.value = value;
+            });
+            
+            // Precinct number validation - alphanumeric only
+            precinctInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                // Allow only alphanumeric characters
+                value = value.replace(/[^a-zA-Z0-9]/g, '');
+                e.target.value = value.toUpperCase();
+            });
+            
+            // House number validation - alphanumeric with slash and dash
+            const houseNoInput = document.getElementById('houseNo');
+            houseNoInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                // Allow alphanumeric, slash, dash, space
+                value = value.replace(/[^a-zA-Z0-9\-\/\s]/g, '');
+                e.target.value = value;
+            });
+            
+            // Street validation - letters, numbers, spaces, and common punctuation
+            const streetInput = document.getElementById('street');
+            streetInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                // Allow letters, numbers, spaces, dash, period, comma, #
+                value = value.replace(/[^a-zA-Z0-9\s\-\.,#]/g, '');
+                e.target.value = value;
+            });
+            
+            // Name validation - letters, spaces, apostrophe, hyphen, period
+            const nameInputs = ['firstName', 'middleName', 'lastName', 'emergencyContactName'];
+            nameInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('input', function(e) {
+                        let value = e.target.value;
+                        // Allow letters, spaces, apostrophe, hyphen, period
+                        value = value.replace(/[^a-zA-Z\s\'\-\.,]/g, '');
+                        e.target.value = value;
+                    });
+                }
+            });
+            
+            // Occupation validation
+            const occupationInput = document.getElementById('occupation');
+            occupationInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                // Allow letters, numbers, spaces, apostrophe, hyphen, period, comma
+                value = value.replace(/[^a-zA-Z0-9\s\'\-\.,]/g, '');
+                e.target.value = value;
+            });
+        }
+        
+        // Validate mobile number format
+        function validateMobileNumber(input) {
+            const value = input.value;
+            const digitsOnly = value.replace(/\D/g, '');
+            const errorMessage = input.parentElement.querySelector('.error-message');
+            
+            if (value && digitsOnly.length < 7) {
+                input.classList.add('error');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Mobile number must be at least 7 digits';
+                    errorMessage.classList.add('show');
+                }
+                return false;
+            } else if (value && digitsOnly.length > 15) {
+                input.classList.add('error');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Mobile number cannot exceed 15 digits';
+                    errorMessage.classList.add('show');
+                }
+                return false;
+            } else if (value && !/^[\d\s+\-()]+$/.test(value)) {
+                input.classList.add('error');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Mobile number can only contain numbers, spaces, +, -, and ()';
+                    errorMessage.classList.add('show');
+                }
+                return false;
+            } else {
+                input.classList.remove('error');
+                if (errorMessage) {
+                    errorMessage.classList.remove('show');
+                }
+                return true;
+            }
+        }
+        
+        // Validate entire form
+        function validateForm() {
+            let isValid = true;
+            
+            // Clear previous error states
+            document.querySelectorAll('.form-control.error').forEach(el => {
+                el.classList.remove('error');
+            });
+            document.querySelectorAll('.error-message.show').forEach(el => {
+                el.classList.remove('show');
+            });
+            
+            // Validate required fields
+            const requiredFields = ['firstName', 'lastName', 'birthDate', 'sex', 'civilStatus', 'houseNo', 'street'];
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorMessage = field.parentElement.querySelector('.error-message');
+                if (field && !field.value.trim()) {
+                    field.classList.add('error');
+                    if (errorMessage) {
+                        errorMessage.textContent = 'This field is required';
+                        errorMessage.classList.add('show');
+                    }
+                    isValid = false;
+                }
+            });
+            
+            // Validate mobile number if provided
+            const mobileInput = document.getElementById('contactNumber');
+            if (mobileInput.value.trim()) {
+                if (!validateMobileNumber(mobileInput)) {
+                    isValid = false;
+                }
+            }
+            
+            // Validate emergency contact number if provided
+            const emergencyInput = document.getElementById('emergencyContactNumber');
+            if (emergencyInput.value.trim()) {
+                const digitsOnly = emergencyInput.value.replace(/\D/g, '');
+                if (digitsOnly.length > 0 && digitsOnly.length < 7) {
+                    emergencyInput.classList.add('error');
+                    const errorMessage = emergencyInput.parentElement.querySelector('.error-message');
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Emergency contact number must be at least 7 digits';
+                        errorMessage.classList.add('show');
+                    }
+                    isValid = false;
+                }
+            }
+            
+            // Validate birth date is not in future
+            const birthDate = new Date(document.getElementById('birthDate').value);
+            if (birthDate > new Date()) {
+                const birthDateInput = document.getElementById('birthDate');
+                birthDateInput.classList.add('error');
+                const errorMessage = birthDateInput.parentElement.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Birth date cannot be in the future';
+                    errorMessage.classList.add('show');
+                }
+                isValid = false;
+            }
+            
+            // Validate birth date is not too far in the past (max 120 years)
+            const minDate = new Date();
+            minDate.setFullYear(minDate.getFullYear() - 120);
+            if (birthDate < minDate) {
+                const birthDateInput = document.getElementById('birthDate');
+                birthDateInput.classList.add('error');
+                const errorMessage = birthDateInput.parentElement.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Birth date cannot be more than 120 years ago';
+                    errorMessage.classList.add('show');
+                }
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        // Load residents
+        async function loadResidents() {
+            try {
+                const response = await fetch(ENDPOINTS.GET_RESIDENTS);
+                const result = await response.json();
+                
+                if (result.success) {
+                    allResidents = result.data;
+                    filteredResidents = [...allResidents];
+                    updateFilterCounts(allResidents);
+                    displayResidents();
+                } else {
+                    showMessage('Error loading residents: ' + result.error, 'error');
+                    displaySampleData();
+                }
+            } catch (error) {
+                console.error('Error loading residents:', error);
+                showMessage('Error loading residents: ' + error.message, 'error');
+                displaySampleData();
+            }
+        }
+        
+        // Display residents with pagination
+        function displayResidents() {
+            residentsTableBody.innerHTML = '';
+            
+            if (!filteredResidents || filteredResidents.length === 0) {
+                residentsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="no-residents">
+                            <h3>No Residents Found</h3>
+                            <p>Click "Add Resident" to register a new resident.</p>
+                        </td>
+                    </tr>
+                `;
+                residentCount.textContent = '0';
+                totalResidentsEl.textContent = '0';
+                updatePagination(0);
+                return;
+            }
+            
+            residentCount.textContent = filteredResidents.length;
+            totalResidentsEl.textContent = filteredResidents.length;
+            
+            // Pagination logic
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = Math.min(startIndex + rowsPerPage, filteredResidents.length);
+            const paginatedResidents = filteredResidents.slice(startIndex, endIndex);
+            
+            paginatedResidents.forEach(resident => {
+                const age = calculateAge(resident.birth_date);
+                
+                // Get status badges
+                let statusHtml = '';
+                if (resident.is_senior) statusHtml += '<span class="status-badge status-senior">Senior</span> ';
+                if (resident.is_pwd) statusHtml += '<span class="status-badge status-pwd">PWD</span> ';
+                if (resident.is_4ps) statusHtml += '<span class="status-badge status-4ps">4Ps</span> ';
+                if (resident.is_solo_parent) statusHtml += '<span class="status-badge status-solo">Solo Parent</span> ';
+                if (!statusHtml) statusHtml = '<span class="status-badge status-regular">Regular</span>';
+                
+                // Format contact number
+                let contactNumber = resident.contact_number || 'N/A';
+                if (contactNumber.length > 15) {
+                    contactNumber = contactNumber.substring(0, 12) + '...';
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="name-cell">${resident.last_name}, ${resident.first_name} ${resident.middle_name ? resident.middle_name.charAt(0) + '.' : ''}</td>
+                    <td>${age}</td>
+                    <td class="address-cell tooltip" title="${resident.house_no} ${resident.street}">
+                        ${resident.house_no} ${resident.street}
+                        <div class="address-detail">Brgy. Immaculate</div>
+                    </td>
+                    <td class="contact-cell tooltip" title="${resident.contact_number || 'N/A'}">${contactNumber}</td>
+                    <td>${statusHtml}</td>
+                    <td class="action-cell">
+                        <button class="btn btn-info btn-sm" onclick="viewResident(${resident.resident_id})">View</button>
+                        <button class="btn btn-success btn-sm" onclick="editResident(${resident.resident_id})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteResident(${resident.resident_id})">Del</button>
+                    </td>
+                `;
+                residentsTableBody.appendChild(row);
+            });
+            
+            updatePagination(filteredResidents.length);
+        }
+        
+        // Update pagination controls
+        function updatePagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            
+            showingStart.textContent = totalItems ? (currentPage - 1) * rowsPerPage + 1 : 0;
+            showingEnd.textContent = totalItems ? Math.min(currentPage * rowsPerPage, totalItems) : 0;
+            
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
+            
+            // Generate page numbers
+            paginationNumbers.innerHTML = '';
+            for (let i = 1; i <= totalPages && i <= 10; i++) {
+                const pageSpan = document.createElement('span');
+                pageSpan.className = `page-number ${i === currentPage ? 'active' : ''}`;
+                pageSpan.textContent = i;
+                pageSpan.addEventListener('click', () => {
+                    currentPage = i;
+                    displayResidents();
+                });
+                paginationNumbers.appendChild(pageSpan);
+            }
+            
+            if (totalPages > 10) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'page-number';
+                ellipsis.textContent = '...';
+                paginationNumbers.appendChild(ellipsis);
+                
+                const lastPage = document.createElement('span');
+                lastPage.className = `page-number ${totalPages === currentPage ? 'active' : ''}`;
+                lastPage.textContent = totalPages;
+                lastPage.addEventListener('click', () => {
+                    currentPage = totalPages;
+                    displayResidents();
+                });
+                paginationNumbers.appendChild(lastPage);
+            }
+        }
+        
+        // Pagination functions
+        function goToPrevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayResidents();
+            }
+        }
+        
+        function goToNextPage() {
+            const totalPages = Math.ceil(filteredResidents.length / rowsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayResidents();
+            }
+        }
+        
+        // Update filter counts
+        function updateFilterCounts(residents) {
+            const total = residents.length;
+            const senior = residents.filter(r => r.is_senior).length;
+            const pwd = residents.filter(r => r.is_pwd).length;
+            const fourps = residents.filter(r => r.is_4ps).length;
+            const solo = residents.filter(r => r.is_solo_parent).length;
+            
+            totalCountEl.textContent = total;
+            seniorCountEl.textContent = senior;
+            pwdCountEl.textContent = pwd;
+            fourpsCountEl.textContent = fourps;
+            soloCountEl.textContent = solo;
+        }
+        
+        // Filter by category
+        function filterByCategory(category) {
+            currentPage = 1;
+            
+            if (category === 'all') {
+                filteredResidents = [...allResidents];
+            } else {
+                filteredResidents = allResidents.filter(resident => {
+                    switch(category) {
+                        case 'senior': return resident.is_senior;
+                        case 'pwd': return resident.is_pwd;
+                        case '4ps': return resident.is_4ps;
+                        case 'solo': return resident.is_solo_parent;
+                        default: return true;
+                    }
+                });
+            }
+            
+            displayResidents();
+        }
+        
+        // Search filter
+        function filterResidents() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            if (!searchTerm) {
+                filteredResidents = [...allResidents];
+            } else {
+                filteredResidents = allResidents.filter(resident => {
+                    const fullName = `${resident.first_name} ${resident.middle_name || ''} ${resident.last_name}`.toLowerCase();
+                    const address = `${resident.house_no} ${resident.street}`.toLowerCase();
+                    const contact = (resident.contact_number || '').toLowerCase();
+                    
+                    return fullName.includes(searchTerm) || 
+                           address.includes(searchTerm) || 
+                           contact.includes(searchTerm);
+                });
+            }
+            
+            currentPage = 1;
+            displayResidents();
+            
+            // Reset active filter pill
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            document.querySelector('[data-filter="all"]').classList.add('active');
+            currentFilter = 'all';
+        }
+        
+        // Calculate age
+        function calculateAge(birthDate) {
+            if (!birthDate) return 'N/A';
+            
+            const today = new Date();
+            const birth = new Date(birthDate);
+            
+            if (isNaN(birth.getTime())) return 'N/A';
+            
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            
+            return age >= 0 ? age : 'N/A';
+        }
+        
+        // Open add modal
+        function openAddModal() {
+            modalTitle.textContent = 'Add New Resident';
+            residentForm.reset();
+            document.getElementById('residentId').value = '';
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('birthDate').max = today;
+            document.getElementById('birthDate').value = '';
+            
+            document.querySelectorAll('.form-control.error').forEach(el => {
+                el.classList.remove('error');
+            });
+            document.querySelectorAll('.error-message.show').forEach(el => {
+                el.classList.remove('show');
+            });
+            
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab[data-tab="personal"]').classList.add('active');
+            document.getElementById('personal-tab').classList.add('active');
+            
+            residentModal.style.display = 'block';
+        }
+        
+        // View resident
+        async function viewResident(id) {
+            try {
+                const response = await fetch(`${ENDPOINTS.GET_RESIDENT}?id=${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    const resident = data.resident;
+                    const age = calculateAge(resident.birth_date);
+                    
+                    // Format phone numbers for display
+                    const mobileNumber = resident.contact_number || 'N/A';
+                    const emergencyNumber = data.health_info?.emergency_contact_number || 'N/A';
+                    
+                    viewModalTitle.textContent = `Resident: ${resident.first_name} ${resident.middle_name ? resident.middle_name + ' ' : ''}${resident.last_name}`;
+                    
+                    residentDetails.innerHTML = `
+                        <div class="info-section">
+                            <h3>Personal Information</h3>
+                            <p><strong>Full Name:</strong> ${resident.first_name} ${resident.middle_name ? resident.middle_name + ' ' : ''}${resident.last_name}</p>
+                            <p><strong>Birth Date:</strong> ${formatDate(resident.birth_date)} (${age} years old)</p>
+                            <p><strong>Gender:</strong> ${resident.sex}</p>
+                            <p><strong>Civil Status:</strong> ${resident.civil_status}</p>
+                            <p><strong>Contact:</strong> ${mobileNumber}</p>
+                            <p><strong>Address:</strong> ${resident.house_no} ${resident.street}, Barangay Immaculate</p>
+                            <p><strong>Special Categories:</strong></p>
+                            <p>
+                                ${resident.is_pwd ? '✓ Person with Disability (PWD)<br>' : ''}
+                                ${resident.is_senior ? '✓ Senior Citizen<br>' : ''}
+                                ${resident.is_solo_parent ? '✓ Solo Parent<br>' : ''}
+                                ${resident.is_4ps ? '✓ 4Ps Beneficiary<br>' : ''}
+                                ${!resident.is_pwd && !resident.is_senior && !resident.is_solo_parent && !resident.is_4ps ? 'None' : ''}
+                            </p>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>Health Information</h3>
+                            <p><strong>Blood Type:</strong> ${data.health_info?.blood_type || 'N/A'}</p>
+                            <p><strong>Vaccination Status:</strong> ${data.health_info?.vaccination_status || 'N/A'}</p>
+                            <p><strong>Allergies:</strong> ${data.health_info?.known_allergies || 'None'}</p>
+                            <p><strong>Medical Conditions:</strong> ${data.health_info?.pre_existing_conditions || 'None'}</p>
+                            <p><strong>Emergency Contact:</strong> ${data.health_info?.emergency_contact_name || 'N/A'} (${emergencyNumber})</p>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>Education & Employment</h3>
+                            <p><strong>Education:</strong> ${data.education_info?.highest_education || 'N/A'}</p>
+                            <p><strong>Employment:</strong> ${data.education_info?.employment_status || 'N/A'}</p>
+                            <p><strong>Occupation:</strong> ${data.education_info?.occupation || 'N/A'}</p>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>Voter Information</h3>
+                            <p><strong>Registered Voter:</strong> ${data.voter_info?.is_registered ? 'Yes' : 'No'}</p>
+                            <p><strong>Precinct Number:</strong> ${data.voter_info?.precinct_number || 'N/A'}</p>
+                        </div>
+                    `;
+                    
+                    viewResidentModal.style.display = 'block';
+                } else {
+                    showMessage('Error loading resident details: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error loading resident details: ' + error.message, 'error');
+            }
+        }
+        
+        // Edit resident
+        async function editResident(id) {
+            try {
+                const response = await fetch(`${ENDPOINTS.GET_RESIDENT}?id=${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    const resident = data.resident;
+                    
+                    modalTitle.textContent = `Edit Resident: ${resident.first_name} ${resident.last_name}`;
+                    
+                    document.getElementById('residentId').value = resident.resident_id;
+                    document.getElementById('firstName').value = resident.first_name;
+                    document.getElementById('middleName').value = resident.middle_name || '';
+                    document.getElementById('lastName').value = resident.last_name;
+                    document.getElementById('birthDate').value = resident.birth_date;
+                    document.getElementById('sex').value = resident.sex;
+                    document.getElementById('civilStatus').value = resident.civil_status;
+                    document.getElementById('contactNumber').value = resident.contact_number || '';
+                    document.getElementById('houseNo').value = resident.house_no;
+                    document.getElementById('street').value = resident.street;
+                    document.getElementById('isPwd').checked = resident.is_pwd === 1;
+                    document.getElementById('isSenior').checked = resident.is_senior === 1;
+                    document.getElementById('isSoloParent').checked = resident.is_solo_parent === 1;
+                    document.getElementById('is4ps').checked = resident.is_4ps === 1;
+                    
+                    if (data.health_info) {
+                        document.getElementById('bloodType').value = data.health_info.blood_type || '';
+                        document.getElementById('vaccinationStatus').value = data.health_info.vaccination_status || '';
+                        document.getElementById('knownAllergies').value = data.health_info.known_allergies || '';
+                        document.getElementById('preExistingConditions').value = data.health_info.pre_existing_conditions || '';
+                        document.getElementById('emergencyContactName').value = data.health_info.emergency_contact_name || '';
+                        document.getElementById('emergencyContactNumber').value = data.health_info.emergency_contact_number || '';
+                    }
+                    
+                    if (data.education_info) {
+                        document.getElementById('highestEducation').value = data.education_info.highest_education || '';
+                        document.getElementById('employmentStatus').value = data.education_info.employment_status || '';
+                        document.getElementById('occupation').value = data.education_info.occupation || '';
+                    }
+                    
+                    if (data.voter_info) {
+                        document.getElementById('isRegistered').checked = data.voter_info.is_registered === 1;
+                        document.getElementById('precinctNumber').value = data.voter_info.precinct_number || '';
+                    }
+                    
+                    document.querySelectorAll('.form-control.error').forEach(el => {
+                        el.classList.remove('error');
+                    });
+                    document.querySelectorAll('.error-message.show').forEach(el => {
+                        el.classList.remove('show');
+                    });
+                    
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.querySelector('.tab[data-tab="personal"]').classList.add('active');
+                    document.getElementById('personal-tab').classList.add('active');
+                    
+                    residentModal.style.display = 'block';
+                } else {
+                    showMessage('Error loading resident for editing: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error loading resident for editing: ' + error.message, 'error');
+            }
+        }
+        
+        // Save resident
+        async function saveResident(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                showMessage('Please fix the errors in the form before saving.', 'error');
+                return;
+            }
+            
+            const residentId = document.getElementById('residentId').value;
+            
+            const formData = {
+                first_name: document.getElementById('firstName').value.trim(),
+                middle_name: document.getElementById('middleName').value.trim(),
+                last_name: document.getElementById('lastName').value.trim(),
+                birth_date: document.getElementById('birthDate').value,
+                sex: document.getElementById('sex').value,
+                civil_status: document.getElementById('civilStatus').value,
+                contact_number: document.getElementById('contactNumber').value.trim(),
+                house_no: document.getElementById('houseNo').value.trim(),
+                street: document.getElementById('street').value.trim(),
+                is_pwd: document.getElementById('isPwd').checked ? 1 : 0,
+                is_senior: document.getElementById('isSenior').checked ? 1 : 0,
+                is_solo_parent: document.getElementById('isSoloParent').checked ? 1 : 0,
+                is_4ps: document.getElementById('is4ps').checked ? 1 : 0,
+                
+                health_info: {
+                    blood_type: document.getElementById('bloodType').value,
+                    known_allergies: document.getElementById('knownAllergies').value.trim(),
+                    pre_existing_conditions: document.getElementById('preExistingConditions').value.trim(),
+                    emergency_contact_name: document.getElementById('emergencyContactName').value.trim(),
+                    emergency_contact_number: document.getElementById('emergencyContactNumber').value.trim(),
+                    vaccination_status: document.getElementById('vaccinationStatus').value
+                },
+                
+                education_info: {
+                    highest_education: document.getElementById('highestEducation').value,
+                    employment_status: document.getElementById('employmentStatus').value,
+                    occupation: document.getElementById('occupation').value.trim()
+                },
+                
+                voter_info: {
+                    is_registered: document.getElementById('isRegistered').checked ? 1 : 0,
+                    precinct_number: document.getElementById('precinctNumber').value.trim()
+                }
+            };
+            
+            try {
+                let response;
+                let endpoint;
+                
+                if (residentId) {
+                    formData.resident_id = residentId;
+                    endpoint = ENDPOINTS.UPDATE_RESIDENT;
+                    response = await fetch(endpoint, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                } else {
+                    endpoint = ENDPOINTS.SAVE_RESIDENT;
+                    response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    loadResidents();
+                    residentModal.style.display = 'none';
+                } else {
+                    showMessage('Error saving resident: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error saving resident: ' + error.message, 'error');
+            }
+        }
+        
+        // Delete resident
+        async function deleteResident(id) {
+            if (confirm('Are you sure you want to delete this resident?\n\nThis action cannot be undone.')) {
+                try {
+                    const response = await fetch(ENDPOINTS.DELETE_RESIDENT, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ resident_id: id })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                        loadResidents();
+                    } else {
+                        showMessage('Error deleting resident: ' + result.error, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error deleting resident: ' + error.message, 'error');
+                }
+            }
+        }
+        
+        // Show message
+        function showMessage(message, type) {
+            messageArea.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 3000);
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'N/A';
+            return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+    </script>
+</body>
+</html>
